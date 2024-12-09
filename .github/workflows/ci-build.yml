@@ -21,7 +21,7 @@ jobs:
 
     - name: Clone Dependent Repo
       run: |
-        git clone https://github.com/w-ahmad/WinUI.TableView.git ../
+        git clone https://github.com/w-ahmad/WinUI.TableView.git ../WinUI.TableView
 
     - name: Checkout
       uses: actions/checkout@v4.1.4
