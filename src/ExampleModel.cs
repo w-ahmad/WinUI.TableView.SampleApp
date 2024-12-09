@@ -6,43 +6,43 @@ namespace WinUI.TableView.SampleApp;
 public partial class ExampleModel : ObservableObject
 {
     [ObservableProperty]
-    private int _id;
+    public partial int Id { get; set; }
 
     [ObservableProperty]
-    [property: Display(ShortName = "First Name")]
-    private string? _firstName;
+    [Display(ShortName = "First Name")]
+    public partial string? FirstName { get; set; }
 
     [ObservableProperty]
-    [property: Display(ShortName = "Last Name")]
-    private string? _lastName;
+    [Display(ShortName = "Last Name")]
+    public partial string? LastName { get; set; }
 
     [ObservableProperty]
-    private string? _email;
+    public partial string? Email { get; set; }
 
     [ObservableProperty]
-    private string? _gender;
+    public partial string? Gender { get; set; }
 
     [ObservableProperty]
-    private DateOnly _dob;
+    public partial DateOnly Dob { get; set; }
 
     [ObservableProperty]
-    [property: Display(ShortName = "Active At")]
-    private TimeOnly _activeAt;
+    [Display(ShortName = "Active At")]
+    public partial TimeOnly ActiveAt { get; set; }
 
     [ObservableProperty]
-    [property: Display(ShortName = "Is Active")]
-    private bool _isActive;
+    [Display(ShortName = "Is Active")]
+    public partial bool IsActive { get; set; }
 
     [ObservableProperty]
-    private string? _department;
+    public partial string? Department { get; set; }
 
     [ObservableProperty]
-    private string? _designation;
+    public partial string? Designation { get; set; }
 
     [ObservableProperty]
-    private string? _address;
+    public partial string? Address { get; set; }
 
     [ObservableProperty]
-    [property: Display(AutoGenerateField = false)]
-    private string? _avatar;
+    [Display(AutoGenerateField = false)]
+    public partial string? Avatar { get; set; }
 }

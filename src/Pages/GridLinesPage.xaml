@@ -20,7 +20,8 @@
         <controls:SamplePresenter Header="Grid lines">
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
-                              ItemsSource="{Binding Items}" />
+                              ItemsSource="{Binding Items}"
+                              AutoGeneratingColumn="{x:Bind local:ExampleModelColumnsHelper.OnAutoGeneratingColumns}" />
             </controls:SamplePresenter.Example>
             <controls:SamplePresenter.Options>
                 <StackPanel Spacing="16">

@@ -9,19 +9,19 @@ namespace WinUI.TableView.SampleApp;
 public partial class ExampleViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<ExampleModel> _items = [];
+    public partial ObservableCollection<ExampleModel> Items { get; set; } = [];
 
     [ObservableProperty]
-    private ObservableCollection<string> _genders = [];
+    public partial ObservableCollection<string> Genders { get; set; } = [];
 
     [ObservableProperty]
-    private ObservableCollection<string> _departments = [];
+    public partial ObservableCollection<string> Departments { get; set; } = [];
 
     [ObservableProperty]
-    private ObservableCollection<string> _designations = [];
+    public partial ObservableCollection<string> Designations {get;set;}= [];
 
     [ObservableProperty]
-    private ExampleModel? _selectedItem;
+    public partial ExampleModel? SelectedItem { get; set; }
 
     public async Task InitializeAsync()
     {
