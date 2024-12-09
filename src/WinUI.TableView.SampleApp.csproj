@@ -21,8 +21,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Condition="'$(Configuration)' == 'Release'" Include="WinUI.TableView" Version="1.2.2" />
-    <ProjectReference Condition="'$(Configuration)' == 'Debug'" Include="..\..\WinUI.TableView\src\WinUI.TableView\WinUI.TableView.csproj" />
+    <!-- <PackageReference Condition="'$(Configuration)' == 'Release'" Include="WinUI.TableView" Version="1.2.2" /> -->
+    <ProjectReference Include="..\..\WinUI.TableView\src\WinUI.TableView\WinUI.TableView.csproj" />
   </ItemGroup>
   
   <ItemGroup>
