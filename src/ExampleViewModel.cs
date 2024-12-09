@@ -54,7 +54,7 @@ public partial class ExampleViewModel : ObservableObject
 
             if (!Genders.Contains(values[4])) Genders.Add(values[4]);
             if (!Departments.Contains(values[8])) Departments.Add(values[8]);
-            if (!Designations.Contains(values[9])) Genders.Add(values[9]);
+            if (!Designations.Contains(values[9])) Designations.Add(values[9]);
         }
     }
 

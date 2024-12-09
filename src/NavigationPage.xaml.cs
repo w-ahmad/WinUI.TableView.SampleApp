@@ -32,7 +32,7 @@ public sealed partial class NavigationPage : Page
         await _exampleViewModel.InitializeAsync();
 
 #if DEBUG
-        navigationView.SelectedItem = navigationView.MenuItems[2];
+        navigationView.SelectedItem = navigationView.MenuItems[3];
 #else
         navigationView.SelectedItem = overViewNavItem;
 #endif
@@ -91,6 +91,7 @@ public sealed partial class NavigationPage : Page
                 "Settings" => typeof(SettingsPage),
                 "Overview" => typeof(OverviewPage),
                 "Grid Lines" => typeof(GridLinesPage),
+                "Selection" => typeof(SelectionPage),
                 _ => null
             };
 

@@ -6,6 +6,8 @@ public static class ExampleModelColumnsHelper
 {
     public static void OnAutoGeneratingColumns(object sender, TableViewAutoGeneratingColumnEventArgs e)
     {
+        var viewModel = (ExampleViewModel)((TableView)sender).DataContext;
+
         switch (e.PropertyName)
         {
             case nameof(ExampleModel.Id):
@@ -21,7 +23,14 @@ public static class ExampleModelColumnsHelper
                 e.Column.Width = new GridLength(270);
                 break;
             case nameof(ExampleModel.Gender):
-                e.Column.Width = new GridLength(110);
+                var textColumn = (TableViewTextColumn)e.Column;
+                e.Column = new TableViewComboBoxColumn
+                {
+                    Binding = textColumn.Binding,
+                    Header = textColumn.Header,
+                    Width = new GridLength(120),
+                    ItemsSource = viewModel.Genders
+                };
                 break;
             case nameof(ExampleModel.Dob):
                 e.Column.Width = new GridLength(110);
@@ -33,7 +42,24 @@ public static class ExampleModelColumnsHelper
                 e.Column.Width = new GridLength(100);
                 break;
             case nameof(ExampleModel.Department):
-                e.Column.Width = new GridLength(200);
+                textColumn = (TableViewTextColumn)e.Column;
+                e.Column = new TableViewComboBoxColumn
+                {
+                    Binding = textColumn.Binding,
+                    Header = textColumn.Header,
+                    Width = new GridLength(200),
+                    ItemsSource = viewModel.Departments
+                };
+                break;
+            case nameof(ExampleModel.Designation):
+                textColumn = (TableViewTextColumn)e.Column;
+                e.Column = new TableViewComboBoxColumn
+                {
+                    Binding = textColumn.Binding,
+                    Header = textColumn.Header,
+                    Width = new GridLength(200),
+                    ItemsSource = viewModel.Designations
+                };
                 break;
             case nameof(ExampleModel.Address):
                 e.Column.Width = new GridLength(200);
