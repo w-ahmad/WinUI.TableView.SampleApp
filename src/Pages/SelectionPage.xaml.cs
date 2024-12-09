@@ -7,5 +7,7 @@ public sealed partial class SelectionPage : Page
     public SelectionPage()
     {
         InitializeComponent();
+
+        selectionModes.ItemsSource = Enum.GetNames<ListViewSelectionMode>();
     }
 }

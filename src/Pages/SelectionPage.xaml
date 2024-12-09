@@ -14,6 +14,7 @@
 
     <Page.Resources>
         <converters:ColorToBrushConverter x:Key="ColorToBrush" />
+        <converters:EnumToStringConverter x:Key="EnumToString" />
     </Page.Resources>
 
     <Grid>
@@ -26,10 +27,10 @@
             <controls:SamplePresenter.Options>
                 <StackPanel Spacing="16"
                             MaxWidth="350">
-                    <ComboBox Header="Selection Mode"
+                    <ComboBox x:Name="selectionModes"
+                              Header="Selection Mode"
                               HorizontalAlignment="Stretch"
-                              SelectedItem="{Binding SelectionMode, Mode=TwoWay, ElementName=tableView}"
-                              ItemsSource="{ui:EnumValues Type=ListViewSelectionMode}" />
+                              SelectedItem="{Binding SelectionMode, Mode=TwoWay, ElementName=tableView, Converter={StaticResource EnumToString}}" />
                     <ComboBox Header="Selection Unit"
                               HorizontalAlignment="Stretch"
                               SelectedItem="{Binding SelectionUnit, Mode=TwoWay, ElementName=tableView}"
