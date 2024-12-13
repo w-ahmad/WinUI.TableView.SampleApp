@@ -9,10 +9,6 @@
              Loaded="OnLoaded"
              x:Name="root">
 
-    <UserControl.Resources>
-        <converters:NullToVisibilityConverter x:Name="NullToVisibility" />
-    </UserControl.Resources>
-
     <Grid Margin="20"
           RowSpacing="8">
         <Grid.RowDefinitions>

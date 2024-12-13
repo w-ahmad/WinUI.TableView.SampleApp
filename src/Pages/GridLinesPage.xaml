@@ -12,10 +12,6 @@
       d:DataContext="{d:DesignInstance Type=local:ExampleViewModel}"
       mc:Ignorable="d">
 
-    <Page.Resources>
-        <converters:ColorToBrushConverter x:Key="ColorToBrush" />
-    </Page.Resources>
-
     <Grid>
         <controls:SamplePresenter Header="Grid lines">
             <controls:SamplePresenter.Example>
@@ -40,7 +36,7 @@
                                    SpinButtonPlacementMode="Inline"
                                    Value="{Binding HorizontalGridLinesStrokeThickness, Mode=TwoWay, ElementName=tableView}" />
                         <toolkit:ColorPickerButton VerticalAlignment="Bottom"
-                                                   SelectedColor="{x:Bind tableView.HorizontalGridLinesStroke, Mode=TwoWay, Converter={StaticResource ColorToBrush}}" />
+                                                   SelectedColor="{Binding HorizontalGridLinesStroke, Mode=TwoWay, ElementName=tableView, Converter={StaticResource ColorToBrush}}" />
                     </StackPanel>
                     <StackPanel Spacing="8"
                                 Orientation="Horizontal">

@@ -29,10 +29,11 @@ public sealed partial class NavigationPage : Page
     private async void OnPageLoaded(object sender, RoutedEventArgs e)
     {
         OnSettingsColorValuesChanged();
+
         await _exampleViewModel.InitializeAsync();
 
 #if DEBUG
-        navigationView.SelectedItem = navigationView.MenuItems[3];
+        navigationView.SelectedItem = navigationView.MenuItems[5];
 #else
         navigationView.SelectedItem = overViewNavItem;
 #endif
@@ -92,6 +93,8 @@ public sealed partial class NavigationPage : Page
                 "Overview" => typeof(OverviewPage),
                 "Grid Lines" => typeof(GridLinesPage),
                 "Selection" => typeof(SelectionPage),
+                "Corner Button" => typeof(CornerButtonPage),
+                "Alternate Row Color" => typeof(AlternateRowColorPage),
                 _ => null
             };
 

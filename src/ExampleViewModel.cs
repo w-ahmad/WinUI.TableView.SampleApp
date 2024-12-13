@@ -18,7 +18,7 @@ public partial class ExampleViewModel : ObservableObject
     public partial ObservableCollection<string> Departments { get; set; } = [];
 
     [ObservableProperty]
-    public partial ObservableCollection<string> Designations {get;set;}= [];
+    public partial ObservableCollection<string> Designations { get; set; } = [];
 
     [ObservableProperty]
     public partial ExampleModel? SelectedItem { get; set; }
