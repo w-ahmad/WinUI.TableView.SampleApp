@@ -33,7 +33,7 @@ public sealed partial class NavigationPage : Page
         await _exampleViewModel.InitializeAsync();
 
 #if DEBUG
-        navigationView.SelectedItem = navigationView.MenuItems[5];
+        navigationView.SelectedItem = navigationView.MenuItems[6];
 #else
         navigationView.SelectedItem = overViewNavItem;
 #endif
@@ -96,6 +96,7 @@ public sealed partial class NavigationPage : Page
                 "Corner Button" => typeof(CornerButtonPage),
                 "Alternate Row Color" => typeof(AlternateRowColorPage),
                 "Context Flyouts" => typeof(ContextFlyoutsPage),
+                "Row Reorder" => typeof(ReorderRowsPage),
                 _ => null
             };
 
@@ -122,6 +123,7 @@ public sealed partial class NavigationPage : Page
 
         if (e.Content is Page { DataContext: null } page)
         {
+            await Task.Delay(10);
             page.DataContext = _exampleViewModel;
         }
 
