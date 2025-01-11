@@ -95,6 +95,7 @@ public sealed partial class NavigationPage : Page
                 "Selection" => typeof(SelectionPage),
                 "Corner Button" => typeof(CornerButtonPage),
                 "Alternate Row Color" => typeof(AlternateRowColorPage),
+                "Context Flyouts" => typeof(ContextFlyoutsPage),
                 _ => null
             };
 
@@ -110,7 +111,7 @@ public sealed partial class NavigationPage : Page
         }
     }
 
-    private void OnRootFrameNavigated(object sender, NavigationEventArgs e)
+    private async void OnRootFrameNavigated(object sender, NavigationEventArgs e)
     {
         _canNavigate = false;
 

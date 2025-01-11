@@ -101,7 +101,7 @@
                         </FontIcon>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Row Context Flyout">
+                <NavigationViewItem Content="Context Flyouts">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8A4;" />
                     </NavigationViewItem.Icon>
