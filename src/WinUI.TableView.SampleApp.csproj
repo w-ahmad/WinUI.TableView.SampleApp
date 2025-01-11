@@ -15,6 +15,11 @@
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>
+      DISABLE_XAML_GENERATED_BINDING_DEBUG_OUTPUT;
+      DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;
+      DISABLE_XAML_GENERATED_RESOURCE_REFERENCE_DEBUG_OUTPUT
+    </DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,6 +46,13 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\ReorderRowsPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

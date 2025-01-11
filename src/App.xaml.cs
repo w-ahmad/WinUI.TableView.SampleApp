@@ -22,6 +22,27 @@ public partial class App : Application
             var wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
             return AppWindow.GetFromWindowId(wndId);
         });
+
+        DebugSettings.BindingFailed += DebugSettings_BindingFailed;
+
+        DebugSettings.XamlResourceReferenceFailed += DebugSettings_XamlResourceReferenceFailed;
+
+        UnhandledException += App_UnhandledException;
+    }
+
+    private void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
+    {
+
+    }
+
+    private void DebugSettings_XamlResourceReferenceFailed(DebugSettings sender, XamlResourceReferenceFailedEventArgs args)
+    {
+
+    }
+
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+
     }
 
     /// <summary>
