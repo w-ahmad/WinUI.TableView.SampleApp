@@ -8,35 +8,28 @@ namespace WinUI.TableView.SampleApp;
 
 public partial class ExampleViewModel : ObservableObject
 {
-    [ObservableProperty]
-    public partial ObservableCollection<ExampleModel> Items { get; set; } = [];
+    private readonly List<ExampleModel> _items = [];
 
-    [ObservableProperty]
-    public partial ObservableCollection<string> Genders { get; set; } = [];
+    public ObservableCollection<ExampleModel> Items => new(_items);
 
-    [ObservableProperty]
-    public partial ObservableCollection<string> Departments { get; set; } = [];
+    public SortedSet<string> Genders { get; set; } = [];
 
-    [ObservableProperty]
-    public partial ObservableCollection<string> Designations { get; set; } = [];
+    public SortedSet<string> Departments { get; set; } = [];
+
+    public SortedSet<string> Designations { get; set; } = [];
 
     [ObservableProperty]
     public partial ExampleModel? SelectedItem { get; set; }
 
     public async Task InitializeAsync()
     {
-        Items.Clear();
-        Genders.Clear();
-        Departments.Clear();
-        Designations.Clear();
-
         var lines = await GetDataLines();
 
-        foreach (var line in lines)
+        foreach (var line in lines.Take(100))
         {
             var values = line.Split(',');
 
-            Items.Add(new ExampleModel
+            _items.Add(new ExampleModel
             {
                 Id = int.Parse(values[0]),
                 FirstName = values[1],
@@ -52,9 +45,9 @@ public partial class ExampleViewModel : ObservableObject
                 Avatar = values[11],
             });
 
-            if (!Genders.Contains(values[4])) Genders.Add(values[4]);
-            if (!Departments.Contains(values[8])) Departments.Add(values[8]);
-            if (!Designations.Contains(values[9])) Designations.Add(values[9]);
+            Genders.Add(values[4]);
+            Departments.Add(values[8]);
+            Designations.Add(values[9]);
         }
     }
 

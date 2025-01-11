@@ -19,7 +19,8 @@
                               ItemsSource="{Binding Items}"
                               AlternateRowBackground="#50515C6B"
                               AlternateRowForeground="#FF00FFFF"
-                              AutoGeneratingColumn="{x:Bind local:ExampleModelColumnsHelper.OnAutoGeneratingColumns}" />
+                              AutoGeneratingColumn="{x:Bind local:ExampleModelColumnsHelper.OnAutoGeneratingColumns}">
+                </tv:TableView>
             </controls:SamplePresenter.Example>
             <controls:SamplePresenter.Options>
                 <StackPanel Spacing="16">

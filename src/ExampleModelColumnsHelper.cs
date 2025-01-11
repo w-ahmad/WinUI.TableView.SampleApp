@@ -7,6 +7,7 @@ public static class ExampleModelColumnsHelper
     public static void OnAutoGeneratingColumns(object sender, TableViewAutoGeneratingColumnEventArgs e)
     {
         var viewModel = (ExampleViewModel)((TableView)sender).DataContext;
+        var boundColumn = (TableViewBoundColumn)e.Column;
 
         switch (e.PropertyName)
         {
@@ -23,40 +24,37 @@ public static class ExampleModelColumnsHelper
                 e.Column.Width = new GridLength(270);
                 break;
             case nameof(ExampleModel.Gender):
-                var textColumn = (TableViewTextColumn)e.Column;
                 e.Column = new TableViewComboBoxColumn
                 {
-                    Binding = textColumn.Binding,
-                    Header = textColumn.Header,
+                    Binding = boundColumn.Binding,
+                    Header = boundColumn.Header,
                     Width = new GridLength(120),
                     ItemsSource = viewModel.Genders
                 };
                 break;
             case nameof(ExampleModel.Dob):
                 e.Column.Width = new GridLength(110);
-                break;
+                break;            
             case nameof(ExampleModel.ActiveAt):
-                e.Column.Width = new GridLength(100);
-                break;
+                e.Column.Width = new GridLength(110);
+                break;            
             case nameof(ExampleModel.IsActive):
                 e.Column.Width = new GridLength(100);
                 break;
             case nameof(ExampleModel.Department):
-                textColumn = (TableViewTextColumn)e.Column;
                 e.Column = new TableViewComboBoxColumn
                 {
-                    Binding = textColumn.Binding,
-                    Header = textColumn.Header,
+                    Binding = boundColumn.Binding,
+                    Header = boundColumn.Header,
                     Width = new GridLength(200),
                     ItemsSource = viewModel.Departments
                 };
                 break;
             case nameof(ExampleModel.Designation):
-                textColumn = (TableViewTextColumn)e.Column;
                 e.Column = new TableViewComboBoxColumn
                 {
-                    Binding = textColumn.Binding,
-                    Header = textColumn.Header,
+                    Binding = boundColumn.Binding,
+                    Header = boundColumn.Header,
                     Width = new GridLength(200),
                     ItemsSource = viewModel.Designations
                 };
