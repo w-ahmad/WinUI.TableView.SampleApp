@@ -15,8 +15,9 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" MinHeight="300" />
+            <RowDefinition x:Name="sourceRow"
+                           Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -105,9 +106,13 @@
         <Expander x:Name="sourceExpander"
                   Grid.Row="4"
                   Grid.ColumnSpan="2"
-                  Visibility="Collapsed"
                   Header="Source code"
-                  HorizontalAlignment="Stretch">
+                  Visibility="Collapsed"
+                  Expanding="OnSourceExpanderExpanded"
+                  Collapsed="OnSourceExpanderCollapsed"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch"
+                  VerticalContentAlignment="Top">
             <Pivot x:Name="sourcePivot">
                 <Pivot.Resources>
                     <x:Double x:Key="PivotHeaderItemFontSize">14</x:Double>

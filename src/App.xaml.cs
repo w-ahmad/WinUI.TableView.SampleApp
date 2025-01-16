@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using System.Diagnostics;
 using WinRT.Interop;
 using WinUI.TableView.SampleApp.Helpers;
 
@@ -30,19 +31,19 @@ public partial class App : Application
         UnhandledException += App_UnhandledException;
     }
 
-    private void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
+    private void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs args)
     {
-
+        Debug.WriteLine(args.Message);
     }
 
     private void DebugSettings_XamlResourceReferenceFailed(DebugSettings sender, XamlResourceReferenceFailedEventArgs args)
     {
-
+        Debug.WriteLine(args.Message);
     }
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-
+        if (Debugger.IsAttached) Debugger.Break();
     }
 
     /// <summary>

@@ -59,6 +59,16 @@ namespace WinUI.TableView.SampleApp.Controls
             themeBackground.Visibility = exampleContainer.ActualTheme != ThemeHelper.ActualTheme ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        private void OnSourceExpanderExpanded(Expander sender, ExpanderExpandingEventArgs args)
+        {
+            sourceRow.Height = new GridLength(1, GridUnitType.Star);
+        }
+
+        private void OnSourceExpanderCollapsed(Expander sender, ExpanderCollapsedEventArgs args)
+        {
+            sourceRow.Height = GridLength.Auto;
+        }
+
         private void OnXamlChanged()
         {
             if (!IsLoaded) return;
@@ -109,7 +119,12 @@ namespace WinUI.TableView.SampleApp.Controls
                 sourcePivot.Items.Insert(lang == "XAML" ? 0 : sourcePivot.Items.Count, new PivotItem
                 {
                     Header = lang,
-                    Content = new ScrollViewer { Content = textBlock }
+                    Content = new ScrollViewer
+                    {
+                        VerticalScrollMode = ScrollMode.Auto,
+                        VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                        Content = textBlock
+                    }
                 });
             }
         }

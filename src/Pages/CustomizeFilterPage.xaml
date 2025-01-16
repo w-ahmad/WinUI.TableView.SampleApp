@@ -1,0 +1,158 @@
+<Page x:Class="WinUI.TableView.SampleApp.Pages.CustomizeFilterPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:WinUI.TableView.SampleApp"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:tv="using:WinUI.TableView"
+      xmlns:controls="using:WinUI.TableView.SampleApp.Controls"
+      d:DataContext="{d:DesignInstance Type=local:ExampleViewModel}"
+      mc:Ignorable="d">
+
+    <Grid>
+        <controls:SamplePresenter Header="Column Custom Filter">
+            <controls:SamplePresenter.Example>
+                <tv:TableView x:Name="tableView"
+                              ItemsSource="{Binding Items}"
+                              AutoGenerateColumns="False"
+                              DataContextChanged="OnDataContextChanged">
+                    <tv:TableView.Columns>
+                        <tv:TableViewNumberColumn Header="Id"
+                                                  Width="100"
+                                                  Binding="{Binding Id}" />
+                        <tv:TableViewTextColumn Header="First Name"
+                                                Width="200"
+                                                Binding="{Binding FirstName}" />
+                        <tv:TableViewTextColumn Header="Last Name"
+                                                Width="200"
+                                                Binding="{Binding LastName}" />
+                        <tv:TableViewTextColumn Header="Email"
+                                                Width="200"
+                                                Binding="{Binding Email}" />
+                        <tv:TableViewTextColumn Header="Gender"
+                                                Width="100"
+                                                Binding="{Binding Gender}" />
+                        <tv:TableViewDateColumn Header="Dob"
+                                                Width="150"
+                                                Binding="{Binding Dob}" />
+                    </tv:TableView.Columns>
+                </tv:TableView>
+            </controls:SamplePresenter.Example>
+            <controls:SamplePresenter.Xaml>
+                <x:String xml:space="preserve">
+&lt;tv:TableView x:Name="tableView"
+    IsReadOnly="True"
+    ItemsSource="{Binding Items}"
+    AutoGenerateColumns="False"
+    FilterFlyoutOpening="OnFilterFlyoutOpening"
+    FilterItemsSearchTextChanged="OnFilterItemsSearchTextChanged"
+    Filtering="OnFiltering"
+    ClearFilter="OnClearFilter"
+    DataContextChanged="OnDataContextChanged">
+    &lt;tv:TableView.Columns>
+    ............
+    &lt;/tv:TableView.Columns>
+&lt;/tv:TableView>
+                </x:String>
+            </controls:SamplePresenter.Xaml>
+            <controls:SamplePresenter.CSharp>
+                <x:String xml:space="preserve">
+private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+{
+    if (DataContext is not ExampleViewModel viewModel) return;
+
+    viewModel.Items = new(ExampleViewModel.ItemsList.Take(20));
+}
+
+private void OnFilterFlyoutOpening(object sender, TableViewFilterFlyoutOpeningEventArgs e)
+{
+    e.FilterItems = GetFilterItems(e.Column, default);
+}
+
+private void OnFilterItemsSearchTextChanged(object sender, TableViewFilterItemsSearchTextChangedEventArgs e)
+{
+    e.FilterItems = GetFilterItems(e.Column, e.FilterText);
+}
+
+private IList&lt;TableViewFilterItem> GetFilterItems(TableViewColumn column, string? filterText)
+{
+    if (DataContext is not ExampleViewModel viewModel) return [];
+
+    var existingItems = ActiveFilters.TryGetValue(column, out var selectedValues) ? selectedValues : [];
+    bool isSelected(object value) => !existingItems.Any() || existingItems.Contains(value);
+    var items = FilterItems(column);
+
+    return items.Select(x => (column?.Header?.ToString()) switch
+    {
+        "Id" => x.Id,
+        "First Name" => x.FirstName,
+        "Last Name" => x.LastName,
+        "Email" => x.Email,
+        "Gender" => x.Gender,
+        "Dob" => (object)x.Dob,
+        _ => null,
+    }).Where(x => string.IsNullOrEmpty(filterText) || x?.ToString()?.Contains(filterText, StringComparison.OrdinalIgnoreCase) is true)
+      .Distinct()
+      .Order()
+      .Select(x => x ?? "(Blank)")
+      .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(filterText) || isSelected(x), x))
+      .ToList();
+}
+
+private void OnFiltering(object sender, TableViewFilteringEventArgs e)
+{
+    if (DataContext is not ExampleViewModel viewModel) return;
+
+    ActiveFilters[e.Column] = e.SelectedValues;
+    viewModel.Items = new(FilterItems().Take(20));
+    e.Handled = true;
+}
+
+private void OnClearFilter(object sender, TableViewClearFilterEventArgs e)
+{
+    if (DataContext is not ExampleViewModel viewModel) return;
+
+    if (ActiveFilters.ContainsKey(e.Column))
+    {
+        ActiveFilters.Remove(e.Column);
+    }
+
+    viewModel.Items = new(FilterItems().Take(20));
+    e.Handled = true;
+}
+
+private IEnumerable&lt;ExampleModel> FilterItems(TableViewColumn? excludeColumns = default)
+{
+    if (DataContext is not ExampleViewModel viewModel) return [];
+
+    return ExampleViewModel.ItemsList.Where(x
+        => ActiveFilters.All(e =>
+        {
+            if (e.Key == excludeColumns) return true;
+
+            var value = GetValue(x, e.Key);
+            value = string.IsNullOrWhiteSpace(value?.ToString()) ? "(Blank)" : value;
+            return e.Value.Contains(value);
+        }));
+}
+
+private object? GetValue(ExampleModel item, TableViewColumn column)
+{
+    return (column?.Header?.ToString()) switch
+    {
+        "Id" => item.Id,
+        "First Name" => item.FirstName,
+        "Last Name" => item.LastName,
+        "Email" => item.Email,
+        "Gender" => item.Gender,
+        "Dob" => item.Dob,
+        _ => null,
+    };
+}
+
+public Dictionary&lt;TableViewColumn, IList&lt;object>> ActiveFilters { get; } = [];
+                </x:String>
+            </controls:SamplePresenter.CSharp>
+        </controls:SamplePresenter>
+    </Grid>
+</Page>

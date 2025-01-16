@@ -12,7 +12,6 @@ public sealed partial class NavigationPage : Page
 {
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly UISettings _settings = new();
-    private readonly ExampleViewModel _exampleViewModel = new();
     private bool _canNavigate = true;
 
     public NavigationPage()
@@ -30,10 +29,10 @@ public sealed partial class NavigationPage : Page
     {
         OnSettingsColorValuesChanged();
 
-        await _exampleViewModel.InitializeAsync();
+        await ExampleViewModel.InitializeItemsAsync();
 
-#if DEBUG
-        navigationView.SelectedItem = navigationView.MenuItems[6];
+#if !DEBUG
+        navigationView.SelectedItem = navigationView.MenuItems[11];
 #else
         navigationView.SelectedItem = overViewNavItem;
 #endif
@@ -97,6 +96,10 @@ public sealed partial class NavigationPage : Page
                 "Alternate Row Color" => typeof(AlternateRowColorPage),
                 "Context Flyouts" => typeof(ContextFlyoutsPage),
                 "Row Reorder" => typeof(ReorderRowsPage),
+                "Pagination" => typeof(PaginationPage),
+                "Filtering" => typeof(FilteringPage),
+                "Customize Filter Flyout" => typeof(CustomizeFilterPage),
+                "External Filtering" => typeof(ExternalFilteringPage),
                 _ => null
             };
 
@@ -124,7 +127,7 @@ public sealed partial class NavigationPage : Page
         if (e.Content is Page { DataContext: null } page)
         {
             await Task.Delay(10);
-            page.DataContext = _exampleViewModel;
+            page.DataContext = new ExampleViewModel();
         }
 
         _canNavigate = true;

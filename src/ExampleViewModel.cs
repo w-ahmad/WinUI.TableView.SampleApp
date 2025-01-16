@@ -8,20 +8,18 @@ namespace WinUI.TableView.SampleApp;
 
 public partial class ExampleViewModel : ObservableObject
 {
-    private readonly List<ExampleModel> _items = [];
+    public ExampleViewModel()
+    {
+        foreach (var item in ItemsList)
+        {
+            Items.Add(item);
+            Genders.Add(item.Gender);
+            Departments.Add(item.Department);
+            Designations.Add(item.Designation);
+        }
+    }
 
-    public ObservableCollection<ExampleModel> Items => new(_items);
-
-    public SortedSet<string> Genders { get; set; } = [];
-
-    public SortedSet<string> Departments { get; set; } = [];
-
-    public SortedSet<string> Designations { get; set; } = [];
-
-    [ObservableProperty]
-    public partial ExampleModel? SelectedItem { get; set; }
-
-    public async Task InitializeAsync()
+    public async static Task InitializeItemsAsync()
     {
         var lines = await GetDataLines();
 
@@ -29,7 +27,7 @@ public partial class ExampleViewModel : ObservableObject
         {
             var values = line.Split(',');
 
-            _items.Add(new ExampleModel
+            ItemsList.Add(new ExampleModel
             {
                 Id = int.Parse(values[0]),
                 FirstName = values[1],
@@ -44,10 +42,6 @@ public partial class ExampleViewModel : ObservableObject
                 Address = values[10],
                 Avatar = values[11],
             });
-
-            Genders.Add(values[4]);
-            Departments.Add(values[8]);
-            Designations.Add(values[9]);
         }
     }
 
@@ -68,4 +62,18 @@ public partial class ExampleViewModel : ObservableObject
 
         return await FileIO.ReadLinesAsync(file);
     }
+
+    public static List<ExampleModel> ItemsList { get; } = [];
+
+    [ObservableProperty]
+    public partial ObservableCollection<ExampleModel> Items { get; set; } = [];
+
+    public SortedSet<string?> Genders { get; set; } = [];
+
+    public SortedSet<string?> Departments { get; set; } = [];
+
+    public SortedSet<string?> Designations { get; set; } = [];
+
+    [ObservableProperty]
+    public partial ExampleModel? SelectedItem { get; set; }
 }
