@@ -100,7 +100,7 @@ public sealed partial class NavigationPage : Page
                 "Filtering" => typeof(FilteringPage),
                 "Customize Filter Flyout" => typeof(CustomizeFilterPage),
                 "External Filtering" => typeof(ExternalFilteringPage),
-                _ => null
+                _ => typeof(BlankPage)
             };
 
             rootFrame.Navigate(pageType, selectedItem);
