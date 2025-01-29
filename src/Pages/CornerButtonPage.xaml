@@ -13,7 +13,8 @@
       mc:Ignorable="d">
     
     <Grid>
-        <controls:SamplePresenter Header="Corner Button">
+        <controls:SamplePresenter Header="Corner Button"
+                                  Description="Showcasing different options for the TableView corner button.">
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               ItemsSource="{Binding Items}"

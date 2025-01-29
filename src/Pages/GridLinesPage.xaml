@@ -13,7 +13,8 @@
       mc:Ignorable="d">
 
     <Grid>
-        <controls:SamplePresenter Header="Grid lines">
+        <controls:SamplePresenter Header="Grid Lines"
+                                  Description="Showcasing grid lines feature.">
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               ItemsSource="{Binding Items}"

@@ -10,7 +10,8 @@
       mc:Ignorable="d">
 
     <Grid>
-        <controls:SamplePresenter Header="Filtering">
+        <controls:SamplePresenter Header="Filtering"
+                                  Description="Showcasing built in column filter feature.">
             <controls:SamplePresenter.Example>
                 <tv:TableView ItemsSource="{Binding Items}"
                               CanFilterColumns="{Binding IsOn, ElementName=canFilter, Mode=TwoWay}" />

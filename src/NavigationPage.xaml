@@ -145,11 +145,6 @@
                         <FontIcon Glyph="&#xE8C8;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Auto Generated Columns">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE835;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
                 <NavigationViewItem Content="Data Export">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEDE1;" />

@@ -13,7 +13,8 @@
       mc:Ignorable="d">
 
     <Grid>
-        <controls:SamplePresenter Header="Selection">
+        <controls:SamplePresenter Header="Selection"
+                                  Description="Showcasing differnet selection options.">
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               ItemsSource="{Binding Items}"

@@ -13,7 +13,8 @@
       mc:Ignorable="d">
 
     <Grid>
-        <controls:SamplePresenter Header="Alternate Row Colors">
+        <controls:SamplePresenter Header="Alternate Row Colors"
+                                  Description="Showcasing alternate row colors feature.">
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               ItemsSource="{Binding Items}"

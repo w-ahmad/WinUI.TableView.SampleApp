@@ -8,18 +8,18 @@
       xmlns:controls="using:WinUI.TableView.SampleApp.Controls"
       xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
       xmlns:ui="using:CommunityToolkit.WinUI"
-      xmlns:converters="using:WinUI.TableView.SampleApp.Converters"
-      xmlns:converters1="using:CommunityToolkit.WinUI.Converters"
+      xmlns:converters="using:CommunityToolkit.WinUI.Converters"
       d:DataContext="{d:DesignInstance Type=local:ExampleViewModel}"
       mc:Ignorable="d">
 
     <Grid>
 
         <Grid.Resources>
-            <converters1:StringFormatConverter x:Key="Formatter" />
+            <converters:StringFormatConverter x:Key="Formatter" />
         </Grid.Resources>
         
-        <controls:SamplePresenter Header="Context Flyouts">
+        <controls:SamplePresenter Header="Context Flyouts"
+                                  Description="Showcasing how context flyouts can be attached to rows and cells.">
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               ItemsSource="{Binding Items}"

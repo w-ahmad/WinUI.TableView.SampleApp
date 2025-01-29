@@ -10,7 +10,8 @@
       mc:Ignorable="d">
 
     <Grid>
-        <controls:SamplePresenter Header="Drag, Drop, and Reordering">
+        <controls:SamplePresenter Header="Drag, Drop, and Reordering"
+                                  Description="Showcasing how row drag &amp; drop and row reorder functionality works.">
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               ItemsSource="{Binding Items}"

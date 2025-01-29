@@ -10,7 +10,8 @@
       mc:Ignorable="d">
 
     <Grid>
-        <controls:SamplePresenter Header="Column Custom Filter">
+        <controls:SamplePresenter Header="Column Custom Filter"
+                                  Description="A simple pagination implementiaon example. This is not built right into the TableView.">
             <controls:SamplePresenter.Example>
                 <Grid>
                     <Grid.RowDefinitions>

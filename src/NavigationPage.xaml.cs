@@ -100,6 +100,8 @@ public sealed partial class NavigationPage : Page
                 "Filtering" => typeof(FilteringPage),
                 "Customize Filter Flyout" => typeof(CustomizeFilterPage),
                 "External Filtering" => typeof(ExternalFilteringPage),
+                "Editing" => typeof(EditingPage),
+                "Sorting" => typeof(SortingPage),
                 _ => typeof(BlankPage)
             };
 

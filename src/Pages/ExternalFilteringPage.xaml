@@ -10,7 +10,8 @@
       mc:Ignorable="d">
 
     <Grid>
-        <controls:SamplePresenter Header="External Filter">
+        <controls:SamplePresenter Header="External Filter"
+                                  Description="This sample demonstrate how a items can be fitlered using a textbox.">
             <controls:SamplePresenter.Example>
                 <Grid RowSpacing="12">
                     <Grid.RowDefinitions>
