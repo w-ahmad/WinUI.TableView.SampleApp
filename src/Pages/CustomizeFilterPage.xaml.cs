@@ -20,13 +20,21 @@ public sealed partial class CustomizeFilterPage : Page
     }
 }
 
-public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : ColumnFilterHandler
+public class FilterHandler : ColumnFilterHandler
 {
+    private readonly TableView _tableView;
+    private readonly ExampleViewModel _viewModel;
     private readonly Dictionary<TableViewColumn, IList<object>> _activeFilters = [];
+
+    public FilterHandler(TableView tableView, ExampleViewModel viewModel) : base(tableView)
+    {
+        _tableView = tableView;
+        _viewModel = viewModel;
+    }
 
     public override void PrepareFilterItems(TableViewColumn column, string? searchText = null)
     {
-        var existingItems = _activeFilters.TryGetValue(column, out var selectedValues) ? selectedValues : [];
+        var existingItems = _activeFilters.TryGetValue(column, out var selectedValues) ? selectedValues : new List<object>();
         bool isSelected(object value) => !existingItems.Any() || existingItems.Contains(value);
         var items = GetItems(column);
 
@@ -52,7 +60,6 @@ public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : 
         _activeFilters[column] = SelectedValues;
 
         _tableView.DeselectAll();
-        _viewModel.Items = [];
         _viewModel.Items = new(GetItems().Take(20));
 
         if (!column.IsFiltered)
@@ -64,12 +71,12 @@ public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : 
         }
     }
 
-    public override void ClearFilter(TableViewColumn column)
+    public override void ClearFilter(TableViewColumn? column)
     {
         if (column is null)
         {
             _activeFilters.Clear();
-            _tableView.FilterDescriptions.Clear();
+            _tableView.ClearAllSorting();
         }
         else
         {

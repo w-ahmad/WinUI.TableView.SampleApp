@@ -102,6 +102,7 @@ public sealed partial class NavigationPage : Page
                 "External Filtering" => typeof(ExternalFilteringPage),
                 "Editing" => typeof(EditingPage),
                 "Sorting" => typeof(SortingPage),
+                "Custom Sorting" => typeof(CustomizeSortingPage),
                 _ => typeof(BlankPage)
             };
 

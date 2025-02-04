@@ -130,6 +130,9 @@
                             </FontIcon.RenderTransform>
                         </FontIcon>
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.MenuItems>
+                        <NavigationViewItem Content="Custom Sorting" />
+                    </NavigationViewItem.MenuItems>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Filtering">
                     <NavigationViewItem.Icon>
