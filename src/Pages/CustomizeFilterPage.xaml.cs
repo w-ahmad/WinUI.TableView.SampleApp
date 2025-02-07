@@ -24,7 +24,6 @@ public class FilterHandler : ColumnFilterHandler
 {
     private readonly TableView _tableView;
     private readonly ExampleViewModel _viewModel;
-    private readonly Dictionary<TableViewColumn, IList<object>> _activeFilters = [];
 
     public FilterHandler(TableView tableView, ExampleViewModel viewModel) : base(tableView)
     {
@@ -32,25 +31,23 @@ public class FilterHandler : ColumnFilterHandler
         _viewModel = viewModel;
     }
 
-    public override void PrepareFilterItems(TableViewColumn column, string? searchText = null)
+    public override IList<TableViewFilterItem> GetFilterItems(TableViewColumn column, string? searchText)
     {
-        var existingItems = _activeFilters.TryGetValue(column, out var selectedValues) ? selectedValues : new List<object>();
+        var existingItems = SelectedValues.TryGetValue(column, out var selectedValues) ? selectedValues : [];
         bool isSelected(object value) => !existingItems.Any() || existingItems.Contains(value);
         var items = GetItems(column);
 
-        FilterItems = items.Select(x => GetPropertyValue(x, column))
-                           .Where(x => string.IsNullOrEmpty(searchText) || x?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) is true)
-                           .Distinct()
-                           .Order()
-                           .Select(x => x ?? "(Blank)")
-                           .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(searchText) || isSelected(x), x))
-                           .ToList();
+        return items.Select(x => GetPropertyValue(x, column))
+                    .Where(x => string.IsNullOrEmpty(searchText) || x?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) is true)
+                    .Distinct()
+                    .Order()
+                    .Select(x => x ?? "(Blank)")
+                    .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(searchText) || isSelected(x), x))
+                    .ToList();
     }
 
     public override void ApplyFilter(TableViewColumn column)
     {
-        _activeFilters[column] = SelectedValues;
-
         _tableView.DeselectAll();
         _viewModel.Items = new(GetItems().Take(20));
 
@@ -65,15 +62,13 @@ public class FilterHandler : ColumnFilterHandler
 
     public override void ClearFilter(TableViewColumn? column)
     {
-        if (column is null)
+        if (column is not null)
         {
-            _activeFilters.Clear();
-            _tableView.ClearAllSorting();
+            var fd = _tableView.FilterDescriptions.First(x => x.PropertyName == GetPropertyName(column));
+            _tableView.FilterDescriptions.Remove(fd);
         }
-        else
-        {
-            _activeFilters.Remove(column);
-        }
+
+        base.ClearFilter(column);
 
         _viewModel.Items = new(GetItems().Take(20));
     }
@@ -83,7 +78,7 @@ public class FilterHandler : ColumnFilterHandler
         if (column.Header?.ToString() is "Full Name" && item is ExampleModel model)
         {
             var value = $"{model.FirstName} {model.LastName}";
-            return CompareValue(SelectedValues, value);
+            return CompareValue(SelectedValues[column], value);
         }
 
         return base.Filter(column, item);
@@ -92,7 +87,7 @@ public class FilterHandler : ColumnFilterHandler
     private IEnumerable<ExampleModel> GetItems(TableViewColumn? excludeColumns = default)
     {
         return ExampleViewModel.ItemsList.Where(x
-            => _activeFilters.All(e =>
+            => SelectedValues.All(e =>
             {
                 if (e.Key == excludeColumns) return true;
 
