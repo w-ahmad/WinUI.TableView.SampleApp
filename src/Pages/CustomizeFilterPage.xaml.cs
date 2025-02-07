@@ -38,21 +38,13 @@ public class FilterHandler : ColumnFilterHandler
         bool isSelected(object value) => !existingItems.Any() || existingItems.Contains(value);
         var items = GetItems(column);
 
-        FilterItems = items.Select(x => (column?.Header?.ToString()) switch
-        {
-            "Id" => x.Id,
-            "First Name" => x.FirstName,
-            "Last Name" => x.LastName,
-            "Email" => x.Email,
-            "Gender" => x.Gender,
-            "Dob" => (object)x.Dob,
-            _ => null,
-        }).Where(x => string.IsNullOrEmpty(searchText) || x?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) is true)
-          .Distinct()
-          .Order()
-          .Select(x => x ?? "(Blank)")
-          .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(searchText) || isSelected(x), x))
-          .ToList();
+        FilterItems = items.Select(x => GetPropertyValue(x, column))
+                           .Where(x => string.IsNullOrEmpty(searchText) || x?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) is true)
+                           .Distinct()
+                           .Order()
+                           .Select(x => x ?? "(Blank)")
+                           .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(searchText) || isSelected(x), x))
+                           .ToList();
     }
 
     public override void ApplyFilter(TableViewColumn column)
@@ -86,6 +78,17 @@ public class FilterHandler : ColumnFilterHandler
         _viewModel.Items = new(GetItems().Take(20));
     }
 
+    public override bool Filter(TableViewColumn column, object? item)
+    {
+        if (column.Header?.ToString() is "Full Name" && item is ExampleModel model)
+        {
+            var value = $"{model.FirstName} {model.LastName}";
+            return CompareValue(SelectedValues, value);
+        }
+
+        return base.Filter(column, item);
+    }
+
     private IEnumerable<ExampleModel> GetItems(TableViewColumn? excludeColumns = default)
     {
         return ExampleViewModel.ItemsList.Where(x
@@ -94,9 +97,14 @@ public class FilterHandler : ColumnFilterHandler
                 if (e.Key == excludeColumns) return true;
 
                 var value = GetPropertyValue(x, e.Key);
-                value = string.IsNullOrWhiteSpace(value?.ToString()) ? "(Blank)" : value;
-                return e.Value.Contains(value);
+                return CompareValue(e.Value, value);
             }));
+    }
+
+    private static bool CompareValue(IList<object> selectedValue, object? value)
+    {
+        value = string.IsNullOrWhiteSpace(value?.ToString()) ? "(Blank)" : value;
+        return selectedValue.Contains(value);
     }
 
     private static string? GetPropertyName(TableViewColumn column)
@@ -106,6 +114,7 @@ public class FilterHandler : ColumnFilterHandler
             "Id" => nameof(ExampleModel.Id),
             "First Name" => nameof(ExampleModel.FirstName),
             "Last Name" => nameof(ExampleModel.LastName),
+            "Full Name" => "FullName",
             "Email" => nameof(ExampleModel.Email),
             "Gender" => nameof(ExampleModel.Gender),
             "Dob" => nameof(ExampleModel.Dob),
@@ -120,6 +129,7 @@ public class FilterHandler : ColumnFilterHandler
             "Id" => item.Id,
             "First Name" => item.FirstName,
             "Last Name" => item.LastName,
+            "Full Name" => $"{item.FirstName} {item.LastName}",
             "Email" => item.Email,
             "Gender" => item.Gender,
             "Dob" => item.Dob,

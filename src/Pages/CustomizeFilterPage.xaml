@@ -27,6 +27,18 @@
                         <tv:TableViewTextColumn Header="Last Name"
                                                 Width="200"
                                                 Binding="{Binding LastName}" />
+                        <tv:TableViewTemplateColumn Header="Full Name"
+                                                    CanFilter="True">
+                            <tv:TableViewTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="2">
+                                        <TextBlock Text="{Binding FirstName}" />
+                                        <TextBlock Text="{Binding LastName}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </tv:TableViewTemplateColumn.CellTemplate>
+                        </tv:TableViewTemplateColumn>
                         <tv:TableViewTextColumn Header="Email"
                                                 Width="200"
                                                 Binding="{Binding Email}" />
@@ -47,6 +59,19 @@
     DataContextChanged="OnDataContextChanged">
     &lt;tv:TableView.Columns>
     ............
+    &lt;tv:TableViewTemplateColumn Header="Full Name"
+                                CanFilter="True">
+        &lt;tv:TableViewTemplateColumn.CellTemplate>
+            &lt;DataTemplate>
+                &lt;StackPanel Orientation="Horizontal"
+                    Spacing="2">
+                    &lt;TextBlock Text="{Binding FirstName}" />
+                    &lt;TextBlock Text="{Binding LastName}" />
+                &lt;/StackPanel>
+            &lt;/DataTemplate>
+        &lt;/tv:TableViewTemplateColumn.CellTemplate>
+    &lt;/tv:TableViewTemplateColumn>
+    ............
     &lt;/tv:TableView.Columns>
 &lt;/tv:TableView>
                 </x:String>
@@ -61,31 +86,31 @@ private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEve
     viewModel.Items = new(ExampleViewModel.ItemsList.Take(20));
 }
 
-public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : ColumnFilterHandler
+public class FilterHandler : ColumnFilterHandler
 {
+    private readonly TableView _tableView;
+    private readonly ExampleViewModel _viewModel;
     private readonly Dictionary&lt;TableViewColumn, IList&lt;object>> _activeFilters = [];
+
+    public FilterHandler(TableView tableView, ExampleViewModel viewModel) : base(tableView)
+    {
+        _tableView = tableView;
+        _viewModel = viewModel;
+    }
 
     public override void PrepareFilterItems(TableViewColumn column, string? searchText = null)
     {
-        var existingItems = _activeFilters.TryGetValue(column, out var selectedValues) ? selectedValues : [];
+        var existingItems = _activeFilters.TryGetValue(column, out var selectedValues) ? selectedValues : new List&lt;object>();
         bool isSelected(object value) => !existingItems.Any() || existingItems.Contains(value);
         var items = GetItems(column);
 
-        FilterItems = items.Select(x => (column?.Header?.ToString()) switch
-        {
-            "Id" => x.Id,
-            "First Name" => x.FirstName,
-            "Last Name" => x.LastName,
-            "Email" => x.Email,
-            "Gender" => x.Gender,
-            "Dob" => (object)x.Dob,
-            _ => null,
-        }).Where(x => string.IsNullOrEmpty(searchText) || x?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) is true)
-          .Distinct()
-          .Order()
-          .Select(x => x ?? "(Blank)")
-          .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(searchText) || isSelected(x), x))
-          .ToList();
+        FilterItems = items.Select(x => GetPropertyValue(x, column))
+                           .Where(x => string.IsNullOrEmpty(searchText) || x?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) is true)
+                           .Distinct()
+                           .Order()
+                           .Select(x => x ?? "(Blank)")
+                           .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(searchText) || isSelected(x), x))
+                           .ToList();
     }
 
     public override void ApplyFilter(TableViewColumn column)
@@ -93,7 +118,6 @@ public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : 
         _activeFilters[column] = SelectedValues;
 
         _tableView.DeselectAll();
-        _viewModel.Items = [];
         _viewModel.Items = new(GetItems().Take(20));
 
         if (!column.IsFiltered)
@@ -105,12 +129,12 @@ public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : 
         }
     }
 
-    public override void ClearFilter(TableViewColumn column)
+    public override void ClearFilter(TableViewColumn? column)
     {
         if (column is null)
         {
             _activeFilters.Clear();
-            _tableView.FilterDescriptions.Clear();
+            _tableView.ClearAllSorting();
         }
         else
         {
@@ -118,6 +142,17 @@ public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : 
         }
 
         _viewModel.Items = new(GetItems().Take(20));
+    }
+
+    public override bool Filter(TableViewColumn column, object? item)
+    {
+        if (column.Header?.ToString() is "Full Name" &amp;&amp; item is ExampleModel model)
+        {
+            var value = $"{model.FirstName} {model.LastName}";
+            return CompareValue(SelectedValues, value);
+        }
+
+        return base.Filter(column, item);
     }
 
     private IEnumerable&lt;ExampleModel> GetItems(TableViewColumn? excludeColumns = default)
@@ -128,9 +163,14 @@ public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : 
                 if (e.Key == excludeColumns) return true;
 
                 var value = GetPropertyValue(x, e.Key);
-                value = string.IsNullOrWhiteSpace(value?.ToString()) ? "(Blank)" : value;
-                return e.Value.Contains(value);
+                return CompareValue(e.Value, value);
             }));
+    }
+
+    private static bool CompareValue(IList&lt;object> selectedValue, object? value)
+    {
+        value = string.IsNullOrWhiteSpace(value?.ToString()) ? "(Blank)" : value;
+        return selectedValue.Contains(value);
     }
 
     private static string? GetPropertyName(TableViewColumn column)
@@ -140,6 +180,7 @@ public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : 
             "Id" => nameof(ExampleModel.Id),
             "First Name" => nameof(ExampleModel.FirstName),
             "Last Name" => nameof(ExampleModel.LastName),
+            "Full Name" => "FullName",
             "Email" => nameof(ExampleModel.Email),
             "Gender" => nameof(ExampleModel.Gender),
             "Dob" => nameof(ExampleModel.Dob),
@@ -154,13 +195,13 @@ public class FilterHandler(TableView _tableView, ExampleViewModel _viewModel) : 
             "Id" => item.Id,
             "First Name" => item.FirstName,
             "Last Name" => item.LastName,
+            "Full Name" => $"{item.FirstName} {item.LastName}",
             "Email" => item.Email,
             "Gender" => item.Gender,
             "Dob" => item.Dob,
             _ => null,
         };
     }
-}
                 </x:String>
             </controls:SamplePresenter.CSharp>
         </controls:SamplePresenter>
