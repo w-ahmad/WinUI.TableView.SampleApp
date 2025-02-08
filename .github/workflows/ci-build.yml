@@ -18,13 +18,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4.1.4
-
-    - name: Clone Dependent Repo
-      run: |
-        git clone https://github.com/w-ahmad/WinUI.TableView.git ../WinUI.TableView
-
-    - name: Checkout
-      uses: actions/checkout@v4.1.4
+      with:
+        submodules: recursive
 
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
