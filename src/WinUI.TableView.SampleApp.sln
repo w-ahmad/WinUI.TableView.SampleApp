@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.TableView.SampleApp", "WinUI.TableView.SampleApp.csproj", "{C06B39C1-834A-44ED-B1D6-91451B5A56E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.TableView", "..\..\WinUI.TableView\src\WinUI.TableView\WinUI.TableView.csproj", "{D92E0805-28E9-452B-85D1-D6CD57A6AB20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.TableView", "..\WinUI.TableView\src\WinUI.TableView.csproj", "{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,18 +35,18 @@ Global
 		{C06B39C1-834A-44ED-B1D6-91451B5A56E0}.Release|x86.ActiveCfg = Release|x86
 		{C06B39C1-834A-44ED-B1D6-91451B5A56E0}.Release|x86.Build.0 = Release|x86
 		{C06B39C1-834A-44ED-B1D6-91451B5A56E0}.Release|x86.Deploy.0 = Release|x86
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Debug|ARM64.ActiveCfg = Debug|arm64
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Debug|ARM64.Build.0 = Debug|arm64
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Debug|x64.ActiveCfg = Debug|x64
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Debug|x64.Build.0 = Debug|x64
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Debug|x86.ActiveCfg = Debug|x86
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Debug|x86.Build.0 = Debug|x86
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Release|ARM64.ActiveCfg = Release|arm64
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Release|ARM64.Build.0 = Release|arm64
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Release|x64.ActiveCfg = Release|x64
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Release|x64.Build.0 = Release|x64
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Release|x86.ActiveCfg = Release|x86
-		{D92E0805-28E9-452B-85D1-D6CD57A6AB20}.Release|x86.Build.0 = Release|x86
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Debug|x64.Build.0 = Debug|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Debug|x86.Build.0 = Debug|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Release|ARM64.Build.0 = Release|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Release|x64.ActiveCfg = Release|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Release|x64.Build.0 = Release|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{DA222F7B-EDDC-4D1E-92DE-D7D3551767B8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

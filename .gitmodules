@@ -1,0 +1,3 @@
+[submodule "WinUI.TableView"]
+	path = WinUI.TableView
+	url = https://github.com/w-ahmad/WinUI.TableView.git
