@@ -11,7 +11,7 @@
 
     <Grid>
         <controls:SamplePresenter Header="Column Custom Sorting"
-                                  Description="This sample demonstrate how to inplement custom sorting.">
+                                  Description="This sample demonstrates how to implement custom sorting.">
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               ItemsSource="{Binding Items}"
@@ -22,14 +22,7 @@
                     <tv:TableView.Columns>
                         <tv:TableViewNumberColumn Header="Id"
                                                   Width="100"
-                                                  Binding="{Binding Id}">
-                            <tv:TableViewNumberColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Margin"
-                                            Value="{ThemeResource AppBarBottomThemePadding}" />
-                                </Style>
-                            </tv:TableViewNumberColumn.ElementStyle>
-                        </tv:TableViewNumberColumn>
+                                                  Binding="{Binding Id}" />
                         <tv:TableViewTextColumn Header="First Name"
                                                 Width="200"
                                                 Binding="{Binding FirstName}" />
