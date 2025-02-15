@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Reflection;
 using Windows.Storage;
 using WinUI.TableView.SampleApp.Helpers;
@@ -34,9 +35,9 @@ public partial class ExampleViewModel : ObservableObject
                 LastName = values[2],
                 Email = values[3],
                 Gender = values[4],
-                Dob = DateOnly.Parse(values[5]),
+                Dob = DateOnly.ParseExact(values[5], "mm/dd/yyyy", CultureInfo.InvariantCulture),
                 IsActive = bool.Parse(values[6]),
-                ActiveAt = TimeOnly.Parse(values[7]),
+                ActiveAt = TimeOnly.ParseExact(values[7], "h:mm tt", CultureInfo.InvariantCulture),
                 Department = values[8],
                 Designation = values[9],
                 Address = values[10],
