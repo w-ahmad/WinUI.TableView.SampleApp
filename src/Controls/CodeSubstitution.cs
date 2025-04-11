@@ -1,6 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
-using Windows.Foundation;
+﻿using Windows.Foundation;
 
 namespace WinUI.TableView.SampleApp.Controls;
 
@@ -9,7 +7,7 @@ namespace WinUI.TableView.SampleApp.Controls;
 /// If enabled (default), then $(Key) is replaced with the stringified value.
 /// If disabled, then $(Key) is replaced with the empty string.
 /// </summary>
-public sealed class CodeSubstitution : DependencyObject
+public sealed partial class CodeSubstitution : DependencyObject
 {
     public event TypedEventHandler<CodeSubstitution, object?>? ValueChanged;
 

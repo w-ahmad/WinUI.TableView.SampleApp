@@ -50,14 +50,16 @@ public partial class ExampleViewModel : ObservableObject
     {
         StorageFile? file;
 
+#if WINDOWS
         if (!NativeHelper.IsAppPackaged)
         {
             var sourcePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Assets/data.csv"));
             file = await StorageFile.GetFileFromPathAsync(sourcePath);
         }
         else
-        {
-            var sourceUri = new Uri("ms-appx:///" + "Assets/data.csv");
+#endif
+        { 
+            var sourceUri = new Uri("ms-appx:///Assets/data.csv");
             file = await StorageFile.GetFileFromApplicationUriAsync(sourceUri);
         }
 

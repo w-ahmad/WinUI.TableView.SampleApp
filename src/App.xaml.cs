@@ -1,64 +1,73 @@
-﻿using Microsoft.UI;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml;
-using System.Diagnostics;
-using WinRT.Interop;
-using WinUI.TableView.SampleApp.Helpers;
+using Microsoft.Extensions.Logging;
+using Uno.Resizetizer;
 
 namespace WinUI.TableView.SampleApp;
 
 public partial class App : Application
 {
-    private readonly Lazy<MainWindow> _mainWindow;
-    private readonly Lazy<AppWindow> _appWindow;
+    private readonly Lazy<Window> _mainWindow = new(() => new Window());
 
     public App()
     {
         InitializeComponent();
-
-        _mainWindow = new(() => new MainWindow());
-        _appWindow = new(() =>
-        {
-            var hWnd = WindowNative.GetWindowHandle(Window);
-            var wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
-            return AppWindow.GetFromWindowId(wndId);
-        });
-
-        DebugSettings.BindingFailed += DebugSettings_BindingFailed;
-
-        DebugSettings.XamlResourceReferenceFailed += DebugSettings_XamlResourceReferenceFailed;
-
-        UnhandledException += App_UnhandledException;
     }
 
-    private void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs args)
-    {
-        Debug.WriteLine(args.Message);
-    }
-
-    private void DebugSettings_XamlResourceReferenceFailed(DebugSettings sender, XamlResourceReferenceFailedEventArgs args)
-    {
-        Debug.WriteLine(args.Message);
-    }
-
-    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-    {
-        if (Debugger.IsAttached) Debugger.Break();
-    }
-
-    /// <summary>
-    /// Invoked when the application is launched.
-    /// </summary>
-    /// <param name="args">Details about the launch request and process.</param>
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        Window.Content = new NavigationPage();
-        ThemeHelper.Initialize();
+#if WINDOWS
+        MainWindow.ExtendsContentIntoTitleBar = true;
+        MainWindow.SystemBackdrop = new MicaBackdrop();
+#endif
+#if DEBUG
+        MainWindow.UseStudio();
+#endif
+        MainWindow.Content ??= new NavigationPage();
 
-        Window.Activate();
+        MainWindow.SetWindowIcon();
+        MainWindow.Activate();
     }
 
-    public Window Window => _mainWindow.Value;
-    public AppWindow AppWindow => _appWindow.Value;
+
+    /// <summary>
+    /// Configures global Uno Platform logging
+    /// </summary>
+    public static void InitializeLogging()
+    {
+#if DEBUG
+        // Logging is disabled by default for release builds, as it incurs a significant
+        // initialization cost from Microsoft.Extensions.Logging setup. If startup performance
+        // is a concern for your application, keep this disabled. If you're running on the web or
+        // desktop targets, you can use URL or command line parameters to enable it.
+        //
+        // For more performance documentation: https://platform.uno/docs/articles/Uno-UI-Performance.html
+
+        var factory = LoggerFactory.Create(builder =>
+        {
+#if __WASM__
+            builder.AddProvider(new global::Uno.Extensions.Logging.WebAssembly.WebAssemblyConsoleLoggerProvider());
+#elif __IOS__ || __MACCATALYST__
+            builder.AddProvider(new global::Uno.Extensions.Logging.OSLogLoggerProvider());
+#else
+            builder.AddConsole();
+#endif
+
+            // Exclude logs below this level
+            builder.SetMinimumLevel(LogLevel.Information);
+
+            // Default filters for Uno Platform namespaces
+            builder.AddFilter("Uno", LogLevel.Warning);
+            builder.AddFilter("Windows", LogLevel.Warning);
+            builder.AddFilter("Microsoft", LogLevel.Warning);
+        });
+
+        global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory = factory;
+
+#if HAS_UNO
+        global::Uno.UI.Adapter.Microsoft.Extensions.Logging.LoggingAdapter.Initialize();
+#endif
+#endif
+    }
+
+    public Window MainWindow => _mainWindow.Value;
     public static new App Current => (App)Application.Current;
 }

@@ -18,7 +18,7 @@ internal static class ThemeHelper
     {
         get
         {
-            if (App.Current.Window.Content is FrameworkElement rootElement)
+            if (App.Current.MainWindow.Content is FrameworkElement rootElement)
             {
                 if (rootElement.RequestedTheme != ElementTheme.Default)
                 {
@@ -35,10 +35,10 @@ internal static class ThemeHelper
     /// </summary>
     public static ElementTheme RootTheme
     {
-        get => App.Current.Window.Content is FrameworkElement rootElement ? rootElement.RequestedTheme : ElementTheme.Default;
+        get => App.Current.MainWindow.Content is FrameworkElement rootElement ? rootElement.RequestedTheme : ElementTheme.Default;
         set
         {
-            if (App.Current.Window.Content is FrameworkElement rootElement)
+            if (App.Current.MainWindow.Content is FrameworkElement rootElement)
             {
                 rootElement.RequestedTheme = value;
             }

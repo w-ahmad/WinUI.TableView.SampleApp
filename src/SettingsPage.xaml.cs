@@ -31,17 +31,17 @@ public sealed partial class SettingsPage : Page
             ThemeHelper.RootTheme = ThemeHelper.GetElementTheme(selectedTheme);
             if (selectedTheme == "Dark")
             {
-                TitleBarHelper.SetCaptionButtonColors(App.Current.Window, Colors.White);
+                TitleBarHelper.SetCaptionButtonColors(App.Current.MainWindow, Colors.White);
                 color = selectedTheme;
             }
             else if (selectedTheme == "Light")
             {
-                TitleBarHelper.SetCaptionButtonColors(App.Current.Window, Colors.Black);
+                TitleBarHelper.SetCaptionButtonColors(App.Current.MainWindow, Colors.Black);
                 color = selectedTheme;
             }
             else
             {
-                color = TitleBarHelper.ApplySystemThemeToCaptionButtons(App.Current.Window) == Colors.White ? "Dark" : "Light";
+                color = TitleBarHelper.ApplySystemThemeToCaptionButtons(App.Current.MainWindow) == Colors.White ? "Dark" : "Light";
             }
             // announce visual change to automation
             UIHelper.AnnounceActionForAccessibility(

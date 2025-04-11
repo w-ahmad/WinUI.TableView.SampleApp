@@ -18,8 +18,8 @@ public sealed partial class NavigationPage : Page
     {
         InitializeComponent();
 
-        App.Current.Window.Activated += OnMainWindowActivated;
-        App.Current.Window.SetTitleBar(AppTitleBar);
+        App.Current.MainWindow.Activated += OnMainWindowActivated;
+        App.Current.MainWindow.SetTitleBar(AppTitleBar);
 
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _settings.ColorValuesChanged += delegate { OnSettingsColorValuesChanged(); };
@@ -40,6 +40,7 @@ public sealed partial class NavigationPage : Page
 
     private void OnMainWindowActivated(object sender, WindowActivatedEventArgs args)
     {
+#if WINDOWS
         if (args.WindowActivationState == WindowActivationState.Deactivated)
         {
             VisualStateManager.GoToState(this, "Deactivated", true);
@@ -47,7 +48,8 @@ public sealed partial class NavigationPage : Page
         else
         {
             VisualStateManager.GoToState(this, "Activated", true);
-        }
+        } 
+#endif
     }
 
     private void OnPaneDisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
@@ -74,7 +76,7 @@ public sealed partial class NavigationPage : Page
     private void OnSettingsColorValuesChanged()
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        _dispatcherQueue.TryEnqueue(() => TitleBarHelper.ApplySystemThemeToCaptionButtons(App.Current.Window));
+        _dispatcherQueue.TryEnqueue(() => TitleBarHelper.ApplySystemThemeToCaptionButtons(App.Current.MainWindow));
     }
 
     private void OnNavigationSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -94,7 +96,9 @@ public sealed partial class NavigationPage : Page
                 "Selection" => typeof(SelectionPage),
                 "Corner Button" => typeof(CornerButtonPage),
                 "Alternate Row Color" => typeof(AlternateRowColorPage),
-                "Context Flyouts" => typeof(ContextFlyoutsPage),
+#if WINDOWS
+                "Context Flyouts" => typeof(ContextFlyoutsPage), 
+#endif
                 "Row Reorder" => typeof(ReorderRowsPage),
                 "Pagination" => typeof(PaginationPage),
                 "Filtering" => typeof(FilteringPage),

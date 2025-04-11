@@ -1,9 +1,12 @@
-using ColorCode;
+#if WINDOWS
+using ColorCode; 
+#endif
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System.Text.RegularExpressions;
+using Uno.Extensions.Toolkit;
 using WinUI.TableView.SampleApp.Helpers;
 
 namespace WinUI.TableView.SampleApp.Controls
@@ -55,8 +58,14 @@ namespace WinUI.TableView.SampleApp.Controls
 
         private void OnToggleThemeButtonClicked(object sender, RoutedEventArgs e)
         {
-            exampleContainer.RequestedTheme = exampleContainer.ActualTheme == ElementTheme.Light ? ElementTheme.Dark : ElementTheme.Light;
-            themeBackground.Visibility = exampleContainer.ActualTheme != ThemeHelper.ActualTheme ? Visibility.Visible : Visibility.Collapsed;
+           if( App.Current.MainWindow.Content is FrameworkElement root)
+            {
+                root.RequestedTheme = root.ActualTheme == ElementTheme.Light ? ElementTheme.Dark : ElementTheme.Light;
+            }
+
+            //exampleContainer.RequestedTheme = exampleContainer.ActualTheme == ElementTheme.Light ? ElementTheme.Dark : ElementTheme.Light;
+            //_themeService.SetThemeAsync(exampleContainer.ActualTheme == ElementTheme.a ? ElementTheme.Dark : ElementTheme.Light);
+            //themeBackground.Visibility = exampleContainer.ActualTheme != ThemeHelper.ActualTheme ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void OnSourceExpanderExpanded(Expander sender, ExpanderExpandingEventArgs args)
@@ -97,15 +106,24 @@ namespace WinUI.TableView.SampleApp.Controls
         {
             code = ApplySubstitutions(code);
 
+#if WINDOWS
             var formatter = new RichTextBlockFormatter(ThemeHelper.ActualTheme);
             var textBlock = new RichTextBlock
             {
                 Margin = new Thickness(0, 8, 0, 0),
                 FontFamily = new FontFamily("Consolas"),
                 IsTextSelectionEnabled = true
-            };
+            }; 
 
             formatter.FormatRichTextBlock(code, lang == "XAML" ? Languages.Xml : Languages.CSharp, textBlock);
+#else
+            var textBlock = new TextBlock
+            {
+                Text = code,
+                Margin = new Thickness(0, 8, 0, 0),
+                FontFamily = new FontFamily("Consolas"),
+            };
+#endif
 
             var pivotItem = sourcePivot.Items.OfType<PivotItem>().FirstOrDefault(x => x.Header?.Equals(lang) is true);
 

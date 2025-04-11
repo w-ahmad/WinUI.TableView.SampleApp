@@ -1,59 +1,50 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Uno.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <WindowsSdkPackageVersion>10.0.22621.38</WindowsSdkPackageVersion>
+    <TargetFrameworks>
+      net9.0-desktop;
+      net9.0-maccatalyst;
+      net9.0-windows10.0.26100;
+      net9.0-browserwasm;
+    </TargetFrameworks>
     <LangVersion>preview</LangVersion>
+    <ApplicationPublisher>w-ahmad</ApplicationPublisher>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>WinUI.TableView.SampleApp</RootNamespace>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Platforms>x86;x64;ARM64</Platforms>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
-    <UseWinUI>true</UseWinUI>
-    <EnableMsixTooling>true</EnableMsixTooling>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>
-      DISABLE_XAML_GENERATED_BINDING_DEBUG_OUTPUT;
-      DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;
-      DISABLE_XAML_GENERATED_RESOURCE_REFERENCE_DEBUG_OUTPUT
-    </DefineConstants>
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+    <ApplicationTitle>WinUI.TableView.SampleApp</ApplicationTitle>
+    <ApplicationId>com.w.ahmad.WinUI.TableView.SampleApp</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <UnoFeatures>
+      ThemeService;
+    </UnoFeatures>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <!-- <PackageReference Condition="'$(Configuration)' == 'Release'" Include="WinUI.TableView" Version="1.2.2" /> -->
-    <ProjectReference Include="..\WinUI.TableView\src\WinUI.TableView.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="ColorCode.WinUI" Version="2.0.15" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.ColorPicker" Version="8.1.240916" />
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
-  </ItemGroup>
-
-  <!--
-    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
-    Tools extension to be activated for this project even if the Windows App SDK Nuget
-    package has not yet been restored.
-  -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
   </ItemGroup>
 
-  <!--
-    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
-    Explorer "Package and Publish" context menu entry to be enabled for this project even if
-    the Windows App SDK Nuget package has not yet been restored.
-  -->
-  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-  </PropertyGroup>
+  <ItemGroup Condition="'$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' != 'windows'">
+    <Compile Remove="Pages\ContextFlyoutsPage.xaml.cs" />
+    <None Remove="Pages\ContextFlyoutsPage.xaml" />
+    <Page Remove="Pages\ContextFlyoutsPage.xaml" />
+  </ItemGroup>
+
+  <Target Name="_RemoveMyTemplateXamlFiles" BeforeTargets="BeforeBuild">
+    <ItemGroup Condition="'$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' != 'windows'">
+      <Page Remove="Pages\ContextFlyoutsPage.xaml" />
+    </ItemGroup>
+  </Target>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\WinUI.TableView\src\WinUI.TableView.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ColorCode.WinUI" Version="2.0.15" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.ColorPicker" Version="8.1.240916" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916" />
+  </ItemGroup>
 </Project>
