@@ -26,4 +26,4 @@ jobs:
 
     - name: Build
       run: |
-        msbuild /restore src/WinUI.TableView.SampleApp.csproj /p:Configuration=Release /p:Platform=${{ matrix.architecture }}
+        msbuild /restore src/WinUI.TableView.SampleApp/WinUI.TableView.SampleApp.csproj /p:Configuration=Release /p:Platform=${{ matrix.architecture }}
