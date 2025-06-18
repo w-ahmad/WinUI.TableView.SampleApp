@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Uno.Sdk">
   <PropertyGroup>
     <TargetFrameworks>
-      $(NetVersion)-browserwasm;
       $(NetVersion)-desktop;
+      $(NetVersion)-browserwasm;
+      $(NetVersion)-android;
+      $(NetVersion)-ios;
     </TargetFrameworks>
 
     <OutputType>Exe</OutputType>
@@ -26,6 +28,7 @@
       https://aka.platform.uno/singleproject-features
     -->
     <UnoFeatures>
+      Mvvm;
       SkiaRenderer;
     </UnoFeatures>
   </PropertyGroup>
@@ -44,9 +47,6 @@
       <DependentUpon>%(RecursiveDir)%(Filename)</DependentUpon>
     </Compile>
     
-    <Compile Remove="..\WinUI.TableView.SampleApp\Pages\ContextFlyoutsPage.xaml.cs" />
-    <Page Remove="..\WinUI.TableView.SampleApp\Pages\ContextFlyoutsPage.xaml" />
-
     <ApplicationDefinition Include="..\WinUI.TableView.SampleApp\App.Xaml" Link="App.Xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <Generator>MSBuild:Compile</Generator>

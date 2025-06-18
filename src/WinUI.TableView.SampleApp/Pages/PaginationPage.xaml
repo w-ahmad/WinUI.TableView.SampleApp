@@ -7,7 +7,9 @@
       xmlns:tv="using:WinUI.TableView"
       xmlns:controls="using:WinUI.TableView.SampleApp.Controls"
       d:DataContext="{d:DesignInstance Type=local:ExampleViewModel}"
-      mc:Ignorable="d">
+      mc:Ignorable="d not_win"
+      xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:not_win="http://uno.ui/not_win">
 
     <Grid>
         <controls:SamplePresenter Header="Column Custom Filter"
@@ -45,20 +47,33 @@
                         </tv:TableView.Columns>
                     </tv:TableView>
 
-                    <Border Grid.Row="1"
-                            Margin="0,10,0,0"
-                            HorizontalAlignment="Right"
-                            CornerRadius="{ThemeResource ControlCornerRadius}">
-                        <ListBox x:Name="pageList"
-                                 
-                                 SelectionChanged="OnPageSelectionChanged">
-                            <ListBox.ItemsPanel>
+                    <Grid Grid.Row="1"
+                          Margin="0,10,0,0"
+                          HorizontalAlignment="Right"
+                          CornerRadius="{ThemeResource ControlCornerRadius}">
+                        <win:ListBox x:Name="pageList"
+                                     SelectionChanged="OnPageSelectionChanged">
+                            <win:ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                        </ListBox>
-                    </Border>
+                            </win:ListBox.ItemsPanel>
+                        </win:ListBox>
+                        <not_win:ListView x:Name="pageList"
+                                          SelectionChanged="OnPageSelectionChanged">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="MinWidth"
+                                            Value="0" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </not_win:ListView>
+                    </Grid>
                 </Grid>
             </controls:SamplePresenter.Example>
             <controls:SamplePresenter.Xaml>

@@ -24,7 +24,7 @@ public partial class ExampleViewModel : ObservableObject
     {
         var lines = await GetDataLines();
 
-        foreach (var line in lines.Take(100))
+        foreach (var line in lines.Take(14))
         {
             var values = line.Split(',');
 

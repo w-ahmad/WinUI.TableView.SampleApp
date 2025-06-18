@@ -31,8 +31,8 @@ public sealed partial class NavigationPage : Page
 
         await ExampleViewModel.InitializeItemsAsync();
 
-#if !DEBUG
-        navigationView.SelectedItem = navigationView.MenuItems[11];
+#if DEBUG
+        navigationView.SelectedItem = navigationView.MenuItems[2];
 #else
         navigationView.SelectedItem = overViewNavItem;
 #endif
@@ -48,7 +48,7 @@ public sealed partial class NavigationPage : Page
         else
         {
             VisualStateManager.GoToState(this, "Activated", true);
-        } 
+        }
 #endif
     }
 
@@ -96,9 +96,7 @@ public sealed partial class NavigationPage : Page
                 "Selection" => typeof(SelectionPage),
                 "Corner Button" => typeof(CornerButtonPage),
                 "Alternate Row Color" => typeof(AlternateRowColorPage),
-#if WINDOWS
-                "Context Flyouts" => typeof(ContextFlyoutsPage), 
-#endif
+                "Context Flyouts" => typeof(ContextFlyoutsPage),
                 "Row Reorder" => typeof(ReorderRowsPage),
                 "Pagination" => typeof(PaginationPage),
                 "Filtering" => typeof(FilteringPage),
