@@ -15,7 +15,7 @@ jobs:
       DIST_PATH: src/WinUI.TableView.SampleApp.Uno/bin/Release/net9.0-browserwasm/publish/wwwroot
       DotnetVersion: '9.0.301'
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
-    runs-on: windows-2022
+    runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
       - uses: actions/checkout@v3
