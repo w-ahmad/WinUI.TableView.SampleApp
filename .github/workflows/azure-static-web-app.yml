@@ -36,7 +36,7 @@ jobs:
 
       - run: |
           cd src/WinUI.TableView.SampleApp.Uno
-          dotnet workload install wasm-tools
+          dotnet workload restore
         name: Setup Workloads
 
       - run: |
