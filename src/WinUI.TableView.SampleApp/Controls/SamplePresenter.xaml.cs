@@ -12,7 +12,7 @@ namespace WinUI.TableView.SampleApp.Controls
 {
     public sealed partial class SamplePresenter : UserControl
     {
-        private const string _baseUri = "https://GitHub.com/w-ahmad/WinUI.TableView.SampleApp/tree/main/src/Pages/";
+        private const string _baseUri = "https://GitHub.com/w-ahmad/WinUI.TableView.SampleApp/tree/main/src/WinUI.TableView.SampleApp/Pages/";
         private static readonly Regex _substitutionPattern = SubstitutionPattern();
 
         public SamplePresenter()

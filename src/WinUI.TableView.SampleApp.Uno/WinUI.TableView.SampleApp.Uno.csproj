@@ -33,8 +33,11 @@
     </UnoFeatures>
   </PropertyGroup>
 
-  <ItemGroup>
-   
+  <PropertyGroup Condition="$(IsBrowserWasm) == 'true'">
+    <RunAOTCompilationAfterBuild>true</RunAOTCompilationAfterBuild>
+  </PropertyGroup>
+
+  <ItemGroup>   
     <Page Include="..\WinUI.TableView.SampleApp\**\*.xaml"
           Exclude="..\WinUI.TableView.SampleApp\bin\**\*.xaml;..\WinUI.TableView.SampleApp\obj\**\*.xaml">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
@@ -59,8 +62,12 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <ProjectReference Include="..\..\WinUI.TableView\src\WinUI.TableView.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="WinUI.TableView" />
   </ItemGroup>
 
 </Project>
