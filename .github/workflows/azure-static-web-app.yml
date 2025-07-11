@@ -40,6 +40,11 @@ jobs:
         name: Setup Workloads
 
       - run: |
+          cd WinUI.TableView
+          dotnet workload install
+        name: Setup Workloads
+
+      - run: |
           cd src/WinUI.TableView.SampleApp.Uno
           dotnet publish -c Release -f net9.0-browserwasm "/p:PackageVersion=${{ steps.nbgv.outputs.SemVer2 }}" /bl:../binlogs/output.binlog
         name: Build Uno Wasm App
