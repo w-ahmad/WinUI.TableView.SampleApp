@@ -34,7 +34,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsBrowserWasm) == 'true'">
-    <RunAOTCompilationAfterBuild>true</RunAOTCompilationAfterBuild>
+    <WasmShellMonoRuntimeExecutionMode>InterpreterAndAOT</WasmShellMonoRuntimeExecutionMode>
   </PropertyGroup>
 
   <ItemGroup>   
