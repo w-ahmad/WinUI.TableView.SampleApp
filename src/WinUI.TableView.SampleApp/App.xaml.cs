@@ -37,6 +37,7 @@ public partial class App : Application
         {
 #if __WASM__
             builder.AddProvider(new global::Uno.Extensions.Logging.WebAssembly.WebAssemblyConsoleLoggerProvider());
+            DebugSettings.EnableFrameRateCounter = true;
 #elif !WINDOWS
             builder.AddConsole();
 #else

@@ -35,6 +35,7 @@
 
   <PropertyGroup Condition="$(IsBrowserWasm) == 'true'">
     <WasmShellMonoRuntimeExecutionMode>InterpreterAndAOT</WasmShellMonoRuntimeExecutionMode>
+    <WasmShellEnableEmccProfiling>true</WasmShellEnableEmccProfiling>
   </PropertyGroup>
 
   <ItemGroup>   
