@@ -12,7 +12,7 @@ on:
 jobs:
   build_and_deploy_job:
     env:
-      DIST_PATH: src/WinUI.TableView.SampleApp.Uno/bin/Release/net9.0-browserwasm/publish/wwwroot
+      DIST_PATH: src/WinUI.TableView.SampleApp.Uno/bin/Release/net9.0-browserwasm/publish
       DotnetVersion: '9.0.301'
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
