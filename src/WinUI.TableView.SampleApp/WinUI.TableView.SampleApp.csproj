@@ -29,6 +29,7 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
     <PackageReference Include="Microsoft.WindowsAppSDK" />
+    <PackageReference Include="ClosedXML" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
