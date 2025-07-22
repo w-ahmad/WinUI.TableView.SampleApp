@@ -51,7 +51,7 @@ public sealed partial class SettingsPage : Page
         }
     }
 
-    public static string Version
+    public string Version
     {
         get
         {
