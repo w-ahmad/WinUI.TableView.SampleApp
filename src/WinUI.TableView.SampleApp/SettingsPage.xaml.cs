@@ -45,17 +45,17 @@ public sealed partial class SettingsPage : Page
             }
             // announce visual change to automation
             UIHelper.AnnounceActionForAccessibility(
-                sender as UIElement, 
+                (UIElement)sender,
                 $"Theme changed to {color}",
                 "ThemeChangedNotificationActivityId");
         }
     }
 
-    public string Version
+    public static string Version
     {
         get
         {
-            var version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            var version = typeof(SettingsPage).Assembly.GetName().Version!;
             return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
         }
     }
