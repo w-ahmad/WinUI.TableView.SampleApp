@@ -26,18 +26,18 @@ public sealed partial class ContextFlyoutsPage : Page
 
     private void OnCellMenuItemClicked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        //var menuItem = sender as MenuFlyoutItem;
+        var menuItem = sender as MenuFlyoutItem;
 
-        //if ((menuItem == copyCell || menuItem == copyCellWithHeader) && menuItem.Tag is TableViewCell cell)
-        //{
-        //    var content = tableView.GetCellsContent([cell.Slot], menuItem == copyCellWithHeader);
+        if ((menuItem == copyCell || menuItem == copyCellWithHeader) && menuItem.Tag is TableViewCell cell)
+        {
+            var content = tableView.GetCellsContent([cell.Slot], menuItem == copyCellWithHeader);
 
-        //    CopyToClipboard(content);
-        //}
-        //else if (menuItem == deleteRow2)
-        //{
-        //    tableView.CollectionView.Remove(deleteRow2.DataContext);
-        //}
+            CopyToClipboard(content);
+        }
+        else if (menuItem == deleteRow2)
+        {
+            tableView.CollectionView.Remove(deleteRow2.DataContext);
+        }
     }
 
     private void OnRowContextFlyoutOpening(object sender, TableViewRowContextFlyoutEventArgs e)
