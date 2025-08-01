@@ -25,8 +25,7 @@ public sealed partial class PaginationPage : Page
         if (DataContext is not ExampleViewModel viewModel) return;
 
         var rowHeight = tableView.RowHeight is not double.NaN ? tableView.RowHeight : tableView.RowMinHeight;
-        var availableHeight = tableView.ActualHeight - tableView.HeaderRowHeight;
-        PageSize = (int)Math.Floor(availableHeight / rowHeight);
+        PageSize = (int)Math.Floor(rowHeight - 32 / rowHeight);
 
         pageList.ItemsSource = Enumerable.Range(1, (int)Math.Ceiling(ExampleViewModel.ItemsList.Count / (double)PageSize));
         pageList.SelectedItem = 1;
