@@ -8,10 +8,14 @@ internal class TitleBarHelper
 {
     public static Color ApplySystemThemeToCaptionButtons(Window window)
     {
-        var element = App.Current.MainWindow.Content as FrameworkElement;
-        var color = element.ActualTheme == ElementTheme.Dark ? Colors.White : Colors.Black;
-        SetCaptionButtonColors(window, color);
-        return color;
+        if (App.Current.MainWindow.Content is FrameworkElement element)
+        {
+            var color = element.ActualTheme == ElementTheme.Dark ? Colors.White : Colors.Black;
+            SetCaptionButtonColors(window, color);
+            return color;
+        }
+
+        return default;
     }
 
     public static void SetCaptionButtonColors(Window window, Color color)
