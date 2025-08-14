@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+  </Folder>
+  <Project Path="../WinUI.TableView/src/WinUI.TableView.csproj" />
+  <Project Path="WinUI.TableView.SampleApp.Uno/WinUI.TableView.SampleApp.Uno.csproj" />
+  <Project Path="WinUI.TableView.SampleApp/WinUI.TableView.SampleApp.csproj">
+    <Platform Project="x64" />
+    <Deploy />
+  </Project>
+</Solution>
