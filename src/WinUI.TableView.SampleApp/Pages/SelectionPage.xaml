@@ -18,6 +18,7 @@
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               ItemsSource="{Binding Items}"
+                              SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                               AutoGeneratingColumn="{x:Bind local:ExampleModelColumnsHelper.OnAutoGeneratingColumns}" />
             </controls:SamplePresenter.Example>
             <controls:SamplePresenter.Options>
@@ -31,10 +32,41 @@
                               HorizontalAlignment="Stretch"
                               SelectedItem="{Binding SelectionUnit, Mode=TwoWay, ElementName=tableView}"
                               ItemsSource="{ui:EnumValues Type=tv:TableViewSelectionUnit}" />
-                    <ToggleSwitch Header="IsReadOnly" 
+                    <ToggleSwitch Header="IsReadOnly"
                                   OnContent="True"
                                   OffContent="False"
-                                  IsOn="{Binding IsReadOnly, Mode=TwoWay, ElementName=tableView}"/>
+                                  IsOn="{Binding IsReadOnly, Mode=TwoWay, ElementName=tableView}" />
+                    <InfoBar IsOpen="True"
+                             IsClosable="False"
+                             Title="Selected Item">
+                        <StackPanel Spacing="8">
+                            <TextBlock>
+                                <Run Text="Row Index:" />
+                                <Run FontWeight="Bold"
+                                     Text="{Binding SelectedIndex, ElementName=tableView}" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Id:" />
+                                <Run FontWeight="Bold"
+                                     Text="{Binding SelectedItem.Id}" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="First Name:" />
+                                <Run FontWeight="Bold"
+                                     Text="{Binding SelectedItem.FirstName}" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Last Name:" />
+                                <Run FontWeight="Bold"
+                                     Text="{Binding SelectedItem.LastName}" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Gender:" />
+                                <Run FontWeight="Bold"
+                                     Text="{Binding SelectedItem.Gender}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </InfoBar>
                     <InfoBar IsOpen="True"
                              IsClosable="False"
                              Title="Tip"
