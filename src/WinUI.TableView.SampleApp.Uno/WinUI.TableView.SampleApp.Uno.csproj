@@ -2,8 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>
       $(NetVersion)-desktop;
-      $(NetVersion)-browserwasm;
-      $(NetVersion)-android;
+      <!-- $(NetVersion)-android; -->
       $(NetVersion)-ios;
     </TargetFrameworks>
 

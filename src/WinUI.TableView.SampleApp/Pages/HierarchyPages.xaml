@@ -5,12 +5,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tableview="using:WinUI.TableView"
+    xmlns:conv="using:WinUI.TableView.SampleApp.Converters"
+    xmlns:pages="using:WinUI.TableView.SampleApp.Pages"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <conv:ExpandGlyphConverter x:Key="ExpandGlyphConverter" />
+        <conv:HeatmapBrushConverter x:Key="HeatmapBrushConverter" />
+        <conv:BoolToDoubleConverter x:Key="BoolToDoubleConverter" />
+        <conv:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+    </Page.Resources>
 
     <Grid RowDefinitions="Auto,*" Padding="12">
         <StackPanel Orientation="Horizontal" Spacing="8">
             <Button Content="Expand All" Click="OnExpandAll"/>
             <Button Content="Collapse All" Click="OnCollapseAll"/>
+            <ToggleButton x:Name="HeatmapToggle" Content="Heatmap" IsChecked="True" />
         </StackPanel>
 
         <tableview:TableView
@@ -19,9 +30,143 @@
             AutoGenerateColumns="False"
             IsHierarchicalEnabled="True"
             ChildrenPath="Children"
-            IndentSize="16">
+            IndentSize="16"
+            Sorting="OnTableSorting"
+            ClearSorting="OnTableClearSorting">
             <tableview:TableView.Columns>
-                <tableview:TableViewTextColumn Header="Name" Binding="{Binding Name}" />
+                <tableview:TableViewTemplateColumn Header="Name" Width="2*" CanSort="True">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="pages:HierarchyPage+FlatNode">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Margin="{Binding Indent}">
+                                <Button Width="24" Height="24" Padding="0" Click="OnToggleNode"
+                                        Visibility="{Binding HasChildren, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="{Binding IsExpanded, Converter={StaticResource ExpandGlyphConverter}}"/>
+                                </Button>
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="{Binding IconGlyph}" Margin="0,0,4,0"/>
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
+
+                <!-- CPU -->
+                <tableview:TableViewTemplateColumn Header="CPU (%)" Width="120">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="pages:HierarchyPage+FlatNode">
+                            <Grid>
+                                <Border Background="{Binding Node.Cpu, Converter={StaticResource HeatmapBrushConverter}, ConverterParameter=max:100}"
+                                        Opacity="{Binding ElementName=HeatmapToggle, Path=IsChecked, Converter={StaticResource BoolToDoubleConverter}}" />
+                                <TextBlock HorizontalAlignment="Stretch" TextAlignment="Right" Margin="12,0,12,0">
+                                    <TextBlock.Text>
+                                        <Binding Path="Node.Cpu" Converter="{StaticResource DoubleToStringConverter}" ConverterParameter="F1" />
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
+
+                <!-- Memory -->
+                <tableview:TableViewTemplateColumn Header="Memory (MB)" Width="140">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="pages:HierarchyPage+FlatNode">
+                            <Grid>
+                                <Border Background="{Binding Node.MemoryMB, Converter={StaticResource HeatmapBrushConverter}, ConverterParameter=max:8000}"
+                                        Opacity="{Binding ElementName=HeatmapToggle, Path=IsChecked, Converter={StaticResource BoolToDoubleConverter}}" />
+                                <TextBlock HorizontalAlignment="Stretch" TextAlignment="Right" Margin="12,0,12,0">
+                                    <TextBlock.Text>
+                                        <Binding Path="Node.MemoryMB" Converter="{StaticResource DoubleToStringConverter}" ConverterParameter="F0" />
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
+
+                <!-- Disk -->
+                <tableview:TableViewTemplateColumn Header="Disk (MB/s)" Width="140">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="pages:HierarchyPage+FlatNode">
+                            <Grid>
+                                <Border Background="{Binding Node.DiskMBps, Converter={StaticResource HeatmapBrushConverter}, ConverterParameter=max:400}"
+                                        Opacity="{Binding ElementName=HeatmapToggle, Path=IsChecked, Converter={StaticResource BoolToDoubleConverter}}" />
+                                <TextBlock HorizontalAlignment="Stretch" TextAlignment="Right" Margin="12,0,12,0">
+                                    <TextBlock.Text>
+                                        <Binding Path="Node.DiskMBps" Converter="{StaticResource DoubleToStringConverter}" ConverterParameter="F1" />
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
+
+                <!-- Network -->
+                <tableview:TableViewTemplateColumn Header="Network (MB/s)" Width="160">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="pages:HierarchyPage+FlatNode">
+                            <Grid>
+                                <Border Background="{Binding Node.NetworkMBps, Converter={StaticResource HeatmapBrushConverter}, ConverterParameter=max:300}"
+                                        Opacity="{Binding ElementName=HeatmapToggle, Path=IsChecked, Converter={StaticResource BoolToDoubleConverter}}" />
+                                <TextBlock HorizontalAlignment="Stretch" TextAlignment="Right" Margin="12,0,12,0">
+                                    <TextBlock.Text>
+                                        <Binding Path="Node.NetworkMBps" Converter="{StaticResource DoubleToStringConverter}" ConverterParameter="F1" />
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
+
+                <!-- GPU -->
+                <tableview:TableViewTemplateColumn Header="GPU (%)" Width="120">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="pages:HierarchyPage+FlatNode">
+                            <Grid>
+                                <Border Background="{Binding Node.Gpu, Converter={StaticResource HeatmapBrushConverter}, ConverterParameter=max:100}"
+                                        Opacity="{Binding ElementName=HeatmapToggle, Path=IsChecked, Converter={StaticResource BoolToDoubleConverter}}" />
+                                <TextBlock HorizontalAlignment="Stretch" TextAlignment="Right" Margin="12,0,12,0">
+                                    <TextBlock.Text>
+                                        <Binding Path="Node.Gpu" Converter="{StaticResource DoubleToStringConverter}" ConverterParameter="F1" />
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
+
+                <!-- NPU -->
+                <tableview:TableViewTemplateColumn Header="NPU (%)" Width="120">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="pages:HierarchyPage+FlatNode">
+                            <Grid>
+                                <Border Background="{Binding Node.Npu, Converter={StaticResource HeatmapBrushConverter}, ConverterParameter=max:100}"
+                                        Opacity="{Binding ElementName=HeatmapToggle, Path=IsChecked, Converter={StaticResource BoolToDoubleConverter}}" />
+                                <TextBlock HorizontalAlignment="Stretch" TextAlignment="Right" Margin="12,0,12,0">
+                                    <TextBlock.Text>
+                                        <Binding Path="Node.Npu" Converter="{StaticResource DoubleToStringConverter}" ConverterParameter="F1" />
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
+
+                <!-- Energy -->
+                <tableview:TableViewTemplateColumn Header="Energy (kW)" Width="140">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="pages:HierarchyPage+FlatNode">
+                            <Grid>
+                                <Border Background="{Binding Node.EnergyKW, Converter={StaticResource HeatmapBrushConverter}, ConverterParameter=max:1.0}"
+                                        Opacity="{Binding ElementName=HeatmapToggle, Path=IsChecked, Converter={StaticResource BoolToDoubleConverter}}" />
+                                <TextBlock HorizontalAlignment="Stretch" TextAlignment="Right" Margin="12,0,12,0">
+                                    <TextBlock.Text>
+                                        <Binding Path="Node.EnergyKW" Converter="{StaticResource DoubleToStringConverter}" ConverterParameter="F3" />
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
             </tableview:TableView.Columns>
         </tableview:TableView>
     </Grid>
