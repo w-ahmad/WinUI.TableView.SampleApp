@@ -106,6 +106,7 @@ public sealed partial class NavigationPage : Page
                 "Sorting" => typeof(SortingPage),
                 "Custom Sorting" => typeof(CustomizeSortingPage),
                 "Data Export" => typeof(ExportPage),
+                "Hierarchy" => typeof(HierarchyPage),
                 _ => typeof(BlankPage)
             };
 

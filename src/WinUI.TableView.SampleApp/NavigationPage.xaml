@@ -168,6 +168,7 @@
                         <FontIcon Glyph="&#xE771;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem x:Name="hierarchyNavItem" Content="Hierarchy" Icon="Bullets" />
             </NavigationView.MenuItems>
             <NavigationView.Content>
                 <Frame x:Name="rootFrame"
