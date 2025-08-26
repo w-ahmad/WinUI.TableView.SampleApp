@@ -62,7 +62,7 @@
                 <StackPanel Spacing="8"
                             Orientation="Horizontal">
                     <PathIcon Data="{StaticResource GitHubIcon}" />
-                    <TextBlock Text="Souce" />
+                    <TextBlock Text="Source" />
                 </StackPanel>
                 <DropDownButton.Flyout>
                     <Flyout>
