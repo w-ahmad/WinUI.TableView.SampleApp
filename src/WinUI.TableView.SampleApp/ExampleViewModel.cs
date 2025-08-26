@@ -58,7 +58,7 @@ public partial class ExampleViewModel : ObservableObject
         }
         else
 #endif
-        { 
+        {
             var sourceUri = new Uri("ms-appx:///Assets/data.csv");
             file = await StorageFile.GetFileFromApplicationUriAsync(sourceUri);
         }
