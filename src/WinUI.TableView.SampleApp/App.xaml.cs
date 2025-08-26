@@ -2,7 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.Extensions.Logging;
 #if !WINDOWS
-using Uno.Resizetizer; 
+using Uno.Resizetizer;
 #endif
 
 namespace WinUI.TableView.SampleApp;

@@ -34,10 +34,10 @@ public static class ExampleModelColumnsHelper
                 break;
             case nameof(ExampleModel.Dob):
                 e.Column.Width = new GridLength(110);
-                break;            
+                break;
             case nameof(ExampleModel.ActiveAt):
                 e.Column.Width = new GridLength(110);
-                break;            
+                break;
             case nameof(ExampleModel.IsActive):
                 e.Column.Width = new GridLength(100);
                 break;
