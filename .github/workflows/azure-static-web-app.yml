@@ -1,9 +1,13 @@
-name: Azure Static Web Apps CD
+name: Azure Static Web Apps CI/CD
 
 on:
   push:
-    tags:
-    - 'v*'
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
 
 jobs:
   build_and_deploy_job:
@@ -58,12 +62,11 @@ jobs:
         with:
           dotnet-version: ${{ env.DotnetVersion }}
 
-      - name: 'Get Version'
-        id: version
-        run: |
-          $version = $env:GITHUB_REF -replace '^refs/tags/v', ''
-          Write-Host "Extracted version: $version"
-          echo "version=$version" >> $env:GITHUB_OUTPUT
+      - uses: dotnet/nbgv@f088059084cb5d872e9d1a994433ca6440c2bf72 # v0.4.2
+        id: nbgv
+        with:
+          toolVersion: 3.6.139
+          setAllVars: true
 
       - run: |
           cd src/WinUI.TableView.SampleApp.Uno
@@ -77,7 +80,7 @@ jobs:
 
       - run: |
           cd src/WinUI.TableView.SampleApp.Uno
-          dotnet publish -c Release -f net9.0-browserwasm "/p:Version=${{ steps.version.outputs.version }}" /bl:..\..\binlogs\output.binlog
+          dotnet publish -c Release -f net9.0-browserwasm "/p:PackageVersion=${{ steps.nbgv.outputs.SemVer2 }}" /bl:../binlogs/output.binlog
         name: Build Uno Wasm App
 
       - uses: actions/upload-artifact@v4
@@ -90,8 +93,8 @@ jobs:
           name: logs
           path: binlogs
         
-      - name: Deploy to Azure
-        id: deploy
+      - name: Build And Deploy
+        id: builddeploy
         continue-on-error: true
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -104,3 +107,15 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+
+  close_pull_request_job:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request Job
+    steps:
+      - name: Close Pull Request
+        id: closepullrequest
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_GROUND_0D0F6A810 }}
+          action: "close"
