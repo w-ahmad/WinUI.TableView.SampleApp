@@ -85,7 +85,6 @@ Always run these commands before committing changes:
 ### Common Issues and Solutions
 
 #### Known Build Issues
-- **Error CS0120 in App.xaml.cs**: If you see "An object reference is required for the non-static field DebugSettings", this is a known issue with the WASM target. The fix is already applied.
 - **EnableWindowsTargeting**: Required on non-Windows platforms due to Windows-specific target frameworks
 - **Submodule not found**: Run `git submodule update --init --recursive`
 
