@@ -64,7 +64,7 @@ namespace WinUI.TableView.SampleApp.Controls
             if (App.Current.MainWindow.Content is FrameworkElement root)
             {
                 root.RequestedTheme = root.ActualTheme == ElementTheme.Light ? ElementTheme.Dark : ElementTheme.Light;
-            } 
+            }
 #endif
         }
 
