@@ -13,6 +13,15 @@ public sealed class BoolToVisibilityConverter : IValueConverter
         => value is Visibility v && v == Visibility.Visible;
 }
 
+public sealed class InverseBoolToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+        => value is bool b && !b ? Visibility.Visible : Visibility.Collapsed;
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+        => value is Visibility v && v == Visibility.Collapsed;
+}
+
 public sealed class ExpandGlyphConverter : IValueConverter
 {
     // Use Segoe MDL2 Assets chevrons: Right (E76C) when collapsed, Down (E70D) when expanded

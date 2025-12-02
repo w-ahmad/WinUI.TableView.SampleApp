@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch WinUI TableView App",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/WinUI.TableView.SampleApp/bin/x64/Debug/net9.0-windows10.0.22621.0/win-x64/WinUI.TableView.SampleApp.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/WinUI.TableView.SampleApp",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

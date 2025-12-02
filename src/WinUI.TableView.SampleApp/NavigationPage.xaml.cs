@@ -105,6 +105,8 @@ public sealed partial class NavigationPage : Page
                 "Editing" => typeof(EditingPage),
                 "Sorting" => typeof(SortingPage),
                 "Custom Sorting" => typeof(CustomizeSortingPage),
+                "Grouping" => typeof(GroupingExamplePage),
+                "Hierarchy-Style Grouping" => typeof(HierarchyStyleGroupingPage),
                 "Data Export" => typeof(ExportPage),
                 "Hierarchy" => typeof(HierarchyPage),
                 _ => typeof(BlankPage)

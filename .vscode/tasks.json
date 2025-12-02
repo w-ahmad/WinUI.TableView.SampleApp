@@ -1,0 +1,71 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\msbuild.exe",
+            "type": "shell",
+            "args": [
+                "${workspaceFolder}/src/WinUI.TableView.SampleApp/WinUI.TableView.SampleApp.csproj",
+                "/t:Build",
+                "/p:Configuration=Debug",
+                "/p:Platform=x64",
+                "/p:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "clean",
+            "command": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\msbuild.exe",
+            "type": "shell",
+            "args": [
+                "${workspaceFolder}/src/WinUI.TableView.SampleApp/WinUI.TableView.SampleApp.csproj",
+                "/t:Clean",
+                "/p:Configuration=Debug",
+                "/p:Platform=x64"
+            ],
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "restore",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "restore",
+                "${workspaceFolder}/src/WinUI.TableView.SampleApp/WinUI.TableView.SampleApp.csproj"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "run",
+            "command": "${workspaceFolder}/src/WinUI.TableView.SampleApp/bin/x64/Debug/net9.0-windows10.0.22621.0/win-x64/WinUI.TableView.SampleApp.exe",
+            "type": "shell",
+            "args": [],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "build and run",
+            "dependsOn": [
+                "build",
+                "run"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        }
+    ]
+}
