@@ -14,7 +14,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>DISABLE_XAML_GENERATED_BINDING_DEBUG_OUTPUT;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;DISABLE_XAML_GENERATED_RESOURCE_REFERENCE_DEBUG_OUTPUT</DefineConstants>
   </PropertyGroup>
-
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>

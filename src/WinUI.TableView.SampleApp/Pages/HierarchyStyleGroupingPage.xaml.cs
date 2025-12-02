@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using WinUI.TableView.SampleApp.Adapters;
 
 namespace WinUI.TableView.SampleApp.Pages;
 
@@ -24,7 +25,7 @@ public sealed class FlatGroupItem : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// The underlying item (either ExampleModel or a group key object)
+    /// The underlying item (either IGroupableItem or a group key object for headers)
     /// </summary>
     public object Item { get; }
 
@@ -42,6 +43,11 @@ public sealed class FlatGroupItem : INotifyPropertyChanged
     /// The group key if this is a group header
     /// </summary>
     public string? GroupKey { get; }
+
+    /// <summary>
+    /// Gets the groupable item (only if this is not a group header)
+    /// </summary>
+    public IGroupableItem? GroupableItem => IsGroupHeader ? null : Item as IGroupableItem;
 
     /// <summary>
     /// Whether the group is expanded (only relevant for group headers)
@@ -66,9 +72,9 @@ public sealed class FlatGroupItem : INotifyPropertyChanged
     public Thickness Indent => new(left: Depth * 24, top: 0, right: 0, bottom: 0);
 
     /// <summary>
-    /// The data item (only if this is not a group header)
+    /// The data item (only if this is not a group header and the underlying item is an ExampleModel adapter)
     /// </summary>
-    public ExampleModel? DataItem => IsGroupHeader ? null : Item as ExampleModel;
+    public ExampleModel? DataItem => (GroupableItem as ExampleModelAdapter)?.Model;
 
     /// <summary>
     /// Icon glyph for expand/collapse chevron
@@ -91,10 +97,22 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     private string? _sortPropertyName;
     private SortDirection? _sortDirection;
     private readonly Dictionary<string, HashSet<object>> _activeFilters = new();
+    private List<IGroupableItem> _sourceItems = [];
 
     public HierarchyStyleGroupingPage()
     {
         InitializeComponent();
+    }
+
+    /// <summary>
+    /// Loads data from any collection of IGroupableItem.
+    /// This enables working with files, custom models, or any adapted data source.
+    /// </summary>
+    /// <param name="items">The items to display and group.</param>
+    public void LoadData(IEnumerable<IGroupableItem> items)
+    {
+        _sourceItems = items?.ToList() ?? [];
+        RebuildGroupedView();
     }
 
     /// <summary>
@@ -111,7 +129,7 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     private class GroupData
     {
         public required string GroupKey { get; init; }
-        public required List<ExampleModel> Items { get; init; }
+        public required List<IGroupableItem> Items { get; init; }
         public bool IsExpanded { get; set; } = true;
     }
 
@@ -120,7 +138,14 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     /// </summary>
     internal void RebuildGroupedView()
     {
-        if (DataContext is not ExampleViewModel viewModel)
+        // Use source items if available, otherwise try to get from DataContext
+        if (_sourceItems.Count == 0 && DataContext is ExampleViewModel viewModel)
+        {
+            // Wrap ExampleModel items in adapters for backward compatibility
+            _sourceItems = viewModel.Items.Select(m => (IGroupableItem)new ExampleModelAdapter(m)).ToList();
+        }
+
+        if (_sourceItems.Count == 0)
         {
             return;
         }
@@ -134,7 +159,7 @@ public sealed partial class HierarchyStyleGroupingPage : Page
         FlatItems.Clear();
 
         // Apply filters to get the base set of items
-        var filteredItems = ApplyFilters(viewModel.Items);
+        var filteredItems = ApplyFilters(_sourceItems);
 
         if (string.IsNullOrEmpty(_currentGroupProperty))
         {
@@ -151,7 +176,10 @@ public sealed partial class HierarchyStyleGroupingPage : Page
         var groups = GroupItemsByProperty(filteredItems, _currentGroupProperty);
 
         // Flatten the groups into the view (similar to HierarchyPage.RebuildFlat)
-        foreach (var group in groups.OrderBy(g => g.GroupKey))
+        // Order groups using smart sort keys from GroupKeyFormatter
+        var orderedGroups = groups.OrderBy(g => GroupKeyFormatter.GetSortKey(_currentGroupProperty, g.GroupKey));
+        
+        foreach (var group in orderedGroups)
         {
             // Restore previous expansion state, default to true
             var isExpanded = expandedGroups.Contains(group.GroupKey);
@@ -187,13 +215,16 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     /// <summary>
     /// Groups items by a property name
     /// </summary>
-    private List<GroupData> GroupItemsByProperty(IEnumerable<ExampleModel> items, string propertyName)
+    private List<GroupData> GroupItemsByProperty(IEnumerable<IGroupableItem> items, string propertyName)
     {
-        var groupedDict = new Dictionary<string, List<ExampleModel>>();
+        var groupedDict = new Dictionary<string, List<IGroupableItem>>();
 
         foreach (var item in items)
         {
-            var groupKey = GetPropertyValue(item, propertyName)?.ToString() ?? "(Blank)";
+            var propertyValue = item.GetPropertyValue(propertyName);
+            
+            // Use GroupKeyFormatter for smart grouping
+            var groupKey = GroupKeyFormatter.FormatGroupKey(propertyName, propertyValue);
 
             if (!groupedDict.ContainsKey(groupKey))
             {
@@ -211,23 +242,9 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     }
 
     /// <summary>
-    /// Gets a property value by name using reflection
-    /// </summary>
-    private static object? GetPropertyValue(ExampleModel item, string propertyName)
-    {
-        return propertyName switch
-        {
-            "Department" => item.Department,
-            "Gender" => item.Gender,
-            "Designation" => item.Designation,
-            _ => null
-        };
-    }
-
-    /// <summary>
     /// Applies active filters to a collection of items
     /// </summary>
-    private IEnumerable<ExampleModel> ApplyFilters(IEnumerable<ExampleModel> items)
+    private IEnumerable<IGroupableItem> ApplyFilters(IEnumerable<IGroupableItem> items)
     {
         if (_activeFilters.Count == 0)
         {
@@ -239,7 +256,7 @@ public sealed partial class HierarchyStyleGroupingPage : Page
             // Item must match ALL active filters
             foreach (var filter in _activeFilters)
             {
-                var propertyValue = GetPropertyValueForFilter(item, filter.Key);
+                var propertyValue = item.GetPropertyValue(filter.Key);
                 var normalizedValue = string.IsNullOrWhiteSpace(propertyValue?.ToString()) ? "(Blank)" : propertyValue;
                 
                 if (!filter.Value.Contains(normalizedValue))
@@ -252,7 +269,7 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     }
 
     /// <summary>
-    /// Gets a property value for filtering purposes
+    /// Gets a property value for filtering purposes (legacy support for ExampleModel)
     /// </summary>
     private static object? GetPropertyValueForFilter(ExampleModel item, string propertyName)
     {
@@ -304,36 +321,36 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     /// <summary>
     /// Applies sorting to a collection of items based on current sort state
     /// </summary>
-    private IEnumerable<ExampleModel> ApplySorting(IEnumerable<ExampleModel> items)
+    private IEnumerable<IGroupableItem> ApplySorting(IEnumerable<IGroupableItem> items)
     {
         if (_sortDirection is null || string.IsNullOrEmpty(_sortPropertyName))
         {
             return items;
         }
 
-        // Apply sorting based on property name and direction
-        return (_sortPropertyName, _sortDirection) switch
-        {
-            ("FirstName", SortDirection.Ascending) => items.OrderBy(i => i.FirstName, StringComparer.OrdinalIgnoreCase),
-            ("FirstName", SortDirection.Descending) => items.OrderByDescending(i => i.FirstName, StringComparer.OrdinalIgnoreCase),
-            ("LastName", SortDirection.Ascending) => items.OrderBy(i => i.LastName, StringComparer.OrdinalIgnoreCase),
-            ("LastName", SortDirection.Descending) => items.OrderByDescending(i => i.LastName, StringComparer.OrdinalIgnoreCase),
-            ("Email", SortDirection.Ascending) => items.OrderBy(i => i.Email, StringComparer.OrdinalIgnoreCase),
-            ("Email", SortDirection.Descending) => items.OrderByDescending(i => i.Email, StringComparer.OrdinalIgnoreCase),
-            ("Gender", SortDirection.Ascending) => items.OrderBy(i => i.Gender, StringComparer.OrdinalIgnoreCase),
-            ("Gender", SortDirection.Descending) => items.OrderByDescending(i => i.Gender, StringComparer.OrdinalIgnoreCase),
-            ("Department", SortDirection.Ascending) => items.OrderBy(i => i.Department, StringComparer.OrdinalIgnoreCase),
-            ("Department", SortDirection.Descending) => items.OrderByDescending(i => i.Department, StringComparer.OrdinalIgnoreCase),
-            ("Designation", SortDirection.Ascending) => items.OrderBy(i => i.Designation, StringComparer.OrdinalIgnoreCase),
-            ("Designation", SortDirection.Descending) => items.OrderByDescending(i => i.Designation, StringComparer.OrdinalIgnoreCase),
-            ("Dob", SortDirection.Ascending) => items.OrderBy(i => i.Dob),
-            ("Dob", SortDirection.Descending) => items.OrderByDescending(i => i.Dob),
-            ("ActiveAt", SortDirection.Ascending) => items.OrderBy(i => i.ActiveAt),
-            ("ActiveAt", SortDirection.Descending) => items.OrderByDescending(i => i.ActiveAt),
-            ("IsActive", SortDirection.Ascending) => items.OrderBy(i => i.IsActive),
-            ("IsActive", SortDirection.Descending) => items.OrderByDescending(i => i.IsActive),
-            _ => items
-        };
+        // Sort using property values from the adapter
+        bool isAscending = _sortDirection == SortDirection.Ascending;
+
+        var sortedItems = items.OrderBy(item => item.GetPropertyValue(_sortPropertyName), 
+            Comparer<object?>.Create((a, b) =>
+            {
+                // Handle nulls
+                if (a is null && b is null) return 0;
+                if (a is null) return -1;
+                if (b is null) return 1;
+
+                // Handle comparable types
+                if (a is IComparable ca && b is IComparable cb && a.GetType() == b.GetType())
+                {
+                    try { return ca.CompareTo(cb); }
+                    catch { /* Fall through to string comparison */ }
+                }
+
+                // Fall back to string comparison
+                return string.Compare(a?.ToString(), b?.ToString(), StringComparison.OrdinalIgnoreCase);
+            }));
+
+        return isAscending ? sortedItems : sortedItems.Reverse();
     }
 
     /// <summary>
@@ -367,15 +384,10 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     /// </summary>
     private void ExpandGroup(FlatGroupItem headerItem, int headerIndex)
     {
-        if (DataContext is not ExampleViewModel viewModel)
-        {
-            return;
-        }
-
         headerItem.IsExpanded = true;
 
         // Apply filters first, then group
-        var filteredItems = ApplyFilters(viewModel.Items);
+        var filteredItems = ApplyFilters(_sourceItems);
         var groupItems = GroupItemsByProperty(filteredItems, _currentGroupProperty)
             .FirstOrDefault(g => g.GroupKey == headerItem.GroupKey);
 

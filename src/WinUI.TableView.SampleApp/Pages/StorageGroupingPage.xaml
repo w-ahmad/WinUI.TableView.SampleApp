@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WinUI.TableView.SampleApp.Pages.StorageGroupingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUI.TableView.SampleApp.Pages"
+    xmlns:tv="using:WinUI.TableView"
+    xmlns:conv="using:WinUI.TableView.SampleApp.Converters"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Control Panel -->
+        <StackPanel Grid.Row="0" Padding="12" Spacing="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+            <TextBlock Text="File System Grouping Example" Style="{StaticResource SubtitleTextBlockStyle}"/>
+            <TextBlock Text="Browse and group files from known folders using WinRT Storage APIs" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+            
+            <Grid ColumnSpacing="8" Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Folder Selection -->
+                <TextBlock Grid.Column="0" Text="Folder:" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="1" x:Name="FolderComboBox" SelectedIndex="0" SelectionChanged="OnFolderChanged">
+                    <ComboBoxItem Content="Downloads" Tag="Downloads"/>
+                    <ComboBoxItem Content="Documents" Tag="Documents"/>
+                    <ComboBoxItem Content="Pictures" Tag="Pictures"/>
+                    <ComboBoxItem Content="Videos" Tag="Videos"/>
+                    <ComboBoxItem Content="Music" Tag="Music"/>
+                </ComboBox>
+
+                <!-- Group By Selection -->
+                <TextBlock Grid.Column="2" Text="Group By:" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                <ComboBox Grid.Column="3" x:Name="GroupByComboBox" SelectedIndex="0" SelectionChanged="OnGroupByChanged">
+                    <ComboBoxItem Content="Date Modified" Tag="DateModified"/>
+                    <ComboBoxItem Content="File Type" Tag="FileType"/>
+                    <ComboBoxItem Content="Size" Tag="Size"/>
+                    <ComboBoxItem Content="Name (A-Z)" Tag="Name"/>
+                    <ComboBoxItem Content="None" Tag=""/>
+                </ComboBox>
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <Button Content="Load Files" Click="OnLoadFiles">
+                        <Button.KeyboardAccelerators>
+                            <KeyboardAccelerator Key="F5"/>
+                        </Button.KeyboardAccelerators>
+                    </Button>
+                    <Button Content="Expand All" Click="OnExpandAll"/>
+                    <Button Content="Collapse All" Click="OnCollapseAll"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Status Bar -->
+            <Grid Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" Visibility="{x:Bind IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ProgressRing IsActive="True" Width="16" Height="16"/>
+                    <TextBlock Text="{x:Bind LoadingStatus, Mode=OneWay}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="0" 
+                           Text="{x:Bind StatusMessage, Mode=OneWay}" 
+                           VerticalAlignment="Center" 
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Visibility="{x:Bind IsLoading, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+
+                <TextBlock Grid.Column="1" 
+                           Text="{x:Bind ItemCountText, Mode=OneWay}" 
+                           VerticalAlignment="Center" 
+                           Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- TableView with Hierarchical Grouping -->
+        <tv:TableView Grid.Row="1" 
+                      x:Name="StorageTable"
+                      ItemsSource="{x:Bind FlatItems, Mode=OneWay}"
+                      SelectionMode="Extended"
+                      CanSortColumns="True"
+                      CanResizeColumns="True"
+                      GridLinesVisibility="Horizontal"
+                      AlternateRowBackground="{ThemeResource SubtleFillColorSecondaryBrush}"
+                      Sorting="OnTableSorting"
+                      ClearSorting="OnTableClearSorting">
+
+            <!-- Group Header Column (with expand/collapse) -->
+            <tv:TableView.Columns>
+                <tv:TableViewTemplateColumn Header="Name" Tag="Name" Width="300" CanSort="True">
+                    <tv:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="local:StorageFlatGroupItem">
+                            <Grid>
+                                <!-- Group Header Row -->
+                                <StackPanel Orientation="Horizontal" 
+                                           Visibility="{x:Bind IsGroupHeader, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                           Margin="{x:Bind Indent, Mode=OneWay}">
+                                    <Button Content="{x:Bind ChevronGlyph, Mode=OneWay}"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="12"
+                                            Width="24"
+                                            Height="24"
+                                            Padding="0"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Click="OnToggleGroup"/>
+                                    <TextBlock Text="{x:Bind GroupKey, Mode=OneWay}" 
+                                              FontWeight="SemiBold"
+                                              VerticalAlignment="Center"
+                                              Margin="8,0,0,0"/>
+                                </StackPanel>
+
+                                <!-- Data Row -->
+                                <StackPanel Orientation="Horizontal"
+                                           Visibility="{x:Bind IsGroupHeader, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                           Margin="{x:Bind Indent, Mode=OneWay}">
+                                    <FontIcon Glyph="{x:Bind FileIcon, Mode=OneWay}"
+                                             FontSize="16"
+                                             Margin="0,0,8,0"
+                                             VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind FileName, Mode=OneWay}" 
+                                              VerticalAlignment="Center"
+                                              TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </tv:TableViewTemplateColumn.CellTemplate>
+                </tv:TableViewTemplateColumn>
+
+                <!-- Type Column -->
+                <tv:TableViewTextColumn Header="Type" 
+                                       Binding="{Binding ItemTypeDisplay}" 
+                                       Tag="ItemType"
+                                       Width="120"
+                                       CanSort="True"/>
+
+                <!-- Size Column -->
+                <tv:TableViewTextColumn Header="Size" 
+                                       Binding="{Binding SizeDisplay}" 
+                                       Tag="Size"
+                                       Width="100"
+                                       CanSort="True"/>
+
+                <!-- Date Modified Column -->
+                <tv:TableViewTextColumn Header="Date Modified" 
+                                       Binding="{Binding DateModifiedDisplay}" 
+                                       Tag="DateModified"
+                                       Width="180"
+                                       CanSort="True"/>
+
+                <!-- File Extension Column -->
+                <tv:TableViewTextColumn Header="Extension" 
+                                       Binding="{Binding FileExtension}" 
+                                       Tag="FileType"
+                                       Width="100"
+                                       CanSort="True"/>
+            </tv:TableView.Columns>
+        </tv:TableView>
+    </Grid>
+</Page>

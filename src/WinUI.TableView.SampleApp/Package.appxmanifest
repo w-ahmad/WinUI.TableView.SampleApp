@@ -42,10 +42,25 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="document">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.txt</uap:FileType>
+              <uap:FileType>.pdf</uap:FileType>
+              <uap:FileType>.docx</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
   
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <uap:Capability Name="documentsLibrary" />
+    <uap:Capability Name="picturesLibrary" />
+    <uap:Capability Name="videosLibrary" />
+    <uap:Capability Name="musicLibrary" />
   </Capabilities>
 </Package>

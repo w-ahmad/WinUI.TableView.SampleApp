@@ -149,6 +149,7 @@
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.MenuItems>
                         <NavigationViewItem Content="Hierarchy-Style Grouping" />
+                        <NavigationViewItem Content="Storage Grouping (Files)" />
                     </NavigationViewItem.MenuItems>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Clipboard Actions">
