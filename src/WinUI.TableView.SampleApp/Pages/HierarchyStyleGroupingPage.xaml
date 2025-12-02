@@ -53,7 +53,7 @@ mc:Ignorable="d">
                     
                     <tableview:TableView.Columns>
                         <!-- Group/Name Column with expand/collapse button -->
-                        <tableview:TableViewTemplateColumn Header="Group / Name" Width="2*" Tag="FirstName" CanSort="True">
+                        <tableview:TableViewTemplateColumn Header="Group / Name" Width="2*" Tag="FirstName" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <!-- Group Header Row -->
@@ -86,7 +86,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Last Name Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Last Name" Width="*" Tag="LastName" CanSort="True">
+                        <tableview:TableViewTemplateColumn Header="Last Name" Width="*" Tag="LastName" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.LastName, Mode=OneWay}"
@@ -96,7 +96,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Email Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Email" Width="2*" Tag="Email" CanSort="True">
+                        <tableview:TableViewTemplateColumn Header="Email" Width="2*" Tag="Email" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.Email, Mode=OneWay}"
@@ -106,7 +106,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Department Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Department" Width="*" Tag="Department" CanSort="True">
+                        <tableview:TableViewTemplateColumn Header="Department" Width="*" Tag="Department" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.Department, Mode=OneWay}"
@@ -116,7 +116,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Gender Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Gender" Width="100" Tag="Gender" CanSort="True">
+                        <tableview:TableViewTemplateColumn Header="Gender" Width="100" Tag="Gender" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.Gender, Mode=OneWay}"
@@ -126,7 +126,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Designation Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Designation" Width="*" Tag="Designation" CanSort="True">
+                        <tableview:TableViewTemplateColumn Header="Designation" Width="*" Tag="Designation" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.Designation, Mode=OneWay}"

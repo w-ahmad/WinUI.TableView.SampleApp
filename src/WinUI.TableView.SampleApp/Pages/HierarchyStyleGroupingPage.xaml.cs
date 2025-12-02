@@ -90,11 +90,19 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     private string _currentGroupProperty = "Department";
     private string? _sortPropertyName;
     private SortDirection? _sortDirection;
+    private readonly Dictionary<string, HashSet<object>> _activeFilters = new();
 
     public HierarchyStyleGroupingPage()
     {
         InitializeComponent();
-        RebuildGroupedView();
+    }
+
+    /// <summary>
+    /// Initializes the filter handler with the view model
+    /// </summary>
+    private void InitializeFilterHandler(ExampleViewModel viewModel)
+    {
+        HierarchyGroupTable.FilterHandler = new HierarchyGroupingFilterHandler(HierarchyGroupTable, this, viewModel);
     }
 
     /// <summary>
@@ -110,7 +118,7 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     /// <summary>
     /// Rebuilds the flattened view based on current grouping property
     /// </summary>
-    private void RebuildGroupedView()
+    internal void RebuildGroupedView()
     {
         if (DataContext is not ExampleViewModel viewModel)
         {
@@ -125,10 +133,13 @@ public sealed partial class HierarchyStyleGroupingPage : Page
 
         FlatItems.Clear();
 
+        // Apply filters to get the base set of items
+        var filteredItems = ApplyFilters(viewModel.Items);
+
         if (string.IsNullOrEmpty(_currentGroupProperty))
         {
             // No grouping - just show all items flat
-            var items = ApplySorting(viewModel.Items);
+            var items = ApplySorting(filteredItems);
             foreach (var item in items)
             {
                 FlatItems.Add(new FlatGroupItem(item, depth: 0, isGroupHeader: false));
@@ -137,7 +148,7 @@ public sealed partial class HierarchyStyleGroupingPage : Page
         }
 
         // Group items by the selected property
-        var groups = GroupItemsByProperty(viewModel.Items, _currentGroupProperty);
+        var groups = GroupItemsByProperty(filteredItems, _currentGroupProperty);
 
         // Flatten the groups into the view (similar to HierarchyPage.RebuildFlat)
         foreach (var group in groups.OrderBy(g => g.GroupKey))
@@ -214,6 +225,83 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     }
 
     /// <summary>
+    /// Applies active filters to a collection of items
+    /// </summary>
+    private IEnumerable<ExampleModel> ApplyFilters(IEnumerable<ExampleModel> items)
+    {
+        if (_activeFilters.Count == 0)
+        {
+            return items;
+        }
+
+        return items.Where(item =>
+        {
+            // Item must match ALL active filters
+            foreach (var filter in _activeFilters)
+            {
+                var propertyValue = GetPropertyValueForFilter(item, filter.Key);
+                var normalizedValue = string.IsNullOrWhiteSpace(propertyValue?.ToString()) ? "(Blank)" : propertyValue;
+                
+                if (!filter.Value.Contains(normalizedValue))
+                {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+
+    /// <summary>
+    /// Gets a property value for filtering purposes
+    /// </summary>
+    private static object? GetPropertyValueForFilter(ExampleModel item, string propertyName)
+    {
+        return propertyName switch
+        {
+            "FirstName" => item.FirstName,
+            "LastName" => item.LastName,
+            "Email" => item.Email,
+            "Gender" => item.Gender,
+            "Department" => item.Department,
+            "Designation" => item.Designation,
+            "Dob" => item.Dob,
+            "ActiveAt" => item.ActiveAt,
+            "IsActive" => item.IsActive,
+            _ => null
+        };
+    }
+
+    /// <summary>
+    /// Public wrapper for GetPropertyValueForFilter (used by filter handler)
+    /// </summary>
+    internal object? GetPropertyValueForFilterPublic(ExampleModel item, string propertyName)
+        => GetPropertyValueForFilter(item, propertyName);
+
+    /// <summary>
+    /// Updates active filters (called by filter handler)
+    /// </summary>
+    internal void UpdateActiveFilters(string propertyName, HashSet<object> values)
+    {
+        _activeFilters[propertyName] = values;
+    }
+
+    /// <summary>
+    /// Removes a filter (called by filter handler)
+    /// </summary>
+    internal void RemoveActiveFilter(string propertyName)
+    {
+        _activeFilters.Remove(propertyName);
+    }
+
+    /// <summary>
+    /// Clears all filters (called by filter handler)
+    /// </summary>
+    internal void ClearAllFilters()
+    {
+        _activeFilters.Clear();
+    }
+
+    /// <summary>
     /// Applies sorting to a collection of items based on current sort state
     /// </summary>
     private IEnumerable<ExampleModel> ApplySorting(IEnumerable<ExampleModel> items)
@@ -286,8 +374,9 @@ public sealed partial class HierarchyStyleGroupingPage : Page
 
         headerItem.IsExpanded = true;
 
-        // Get all items for this group
-        var groupItems = GroupItemsByProperty(viewModel.Items, _currentGroupProperty)
+        // Apply filters first, then group
+        var filteredItems = ApplyFilters(viewModel.Items);
+        var groupItems = GroupItemsByProperty(filteredItems, _currentGroupProperty)
             .FirstOrDefault(g => g.GroupKey == headerItem.GroupKey);
 
         if (groupItems is null)
@@ -295,9 +384,10 @@ public sealed partial class HierarchyStyleGroupingPage : Page
             return;
         }
 
-        // Insert items right after the header
+        // Apply sorting and insert items right after the header
+        var sortedItems = ApplySorting(groupItems.Items);
         var insertAt = headerIndex + 1;
-        foreach (var dataItem in groupItems.Items)
+        foreach (var dataItem in sortedItems)
         {
             FlatItems.Insert(insertAt++, new FlatGroupItem(
                 item: dataItem,
@@ -371,6 +461,10 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     /// </summary>
     private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
     {
+        if (DataContext is ExampleViewModel viewModel)
+        {
+            InitializeFilterHandler(viewModel);
+        }
         RebuildGroupedView();
     }
 
@@ -421,5 +515,98 @@ public sealed partial class HierarchyStyleGroupingPage : Page
         RebuildGroupedView();
 
         e.Handled = true;
+    }
+}
+
+/// <summary>
+/// Custom filter handler for hierarchy-style grouping that filters the underlying data
+/// </summary>
+public class HierarchyGroupingFilterHandler : ColumnFilterHandler
+{
+    private readonly HierarchyStyleGroupingPage _page;
+    private readonly ExampleViewModel _viewModel;
+    private readonly TableView _tableView;
+
+    public HierarchyGroupingFilterHandler(TableView tableView, HierarchyStyleGroupingPage page, ExampleViewModel viewModel) 
+        : base(tableView)
+    {
+        _tableView = tableView;
+        _page = page;
+        _viewModel = viewModel;
+    }
+
+    public override IList<TableViewFilterItem> GetFilterItems(TableViewColumn column, string? searchText)
+    {
+        if (column?.Tag is not string propertyName)
+        {
+            return [];
+        }
+
+        // Get all unique values from the full dataset (not filtered)
+        var allValues = _viewModel.Items
+            .Select(item => _page.GetPropertyValueForFilterPublic(item, propertyName))
+            .Select(v => string.IsNullOrWhiteSpace(v?.ToString()) ? "(Blank)" : v)
+            .Distinct()
+            .OrderBy(v => v?.ToString())
+            .ToList();
+
+        // Determine which values are currently selected
+        var selectedValues = SelectedValues.TryGetValue(column, out var selected) ? selected : [];
+        bool isSelected(object? value) => !column.IsFiltered || selectedValues.Contains(value!);
+
+        return allValues
+            .Where(v => string.IsNullOrEmpty(searchText) || 
+                       v?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true)
+            .Select(v => new TableViewFilterItem(isSelected(v), v!))
+            .ToList();
+    }
+
+    public override void ApplyFilter(TableViewColumn column)
+    {
+        if (column?.Tag is not string propertyName)
+        {
+            return;
+        }
+
+        if (!column.IsFiltered)
+        {
+            column.IsFiltered = true;
+        }
+
+        // Update the page's active filters
+        _page.UpdateActiveFilters(propertyName, SelectedValues[column].ToHashSet());
+
+        // Rebuild the view with filters applied
+        _page.RebuildGroupedView();
+    }
+
+    public override void ClearFilter(TableViewColumn? column)
+    {
+        if (column is not null)
+        {
+            column.IsFiltered = false;
+            SelectedValues.Remove(column);
+
+            if (column.Tag is string propertyName)
+            {
+                _page.RemoveActiveFilter(propertyName);
+            }
+        }
+        else
+        {
+            // Clear all filters
+            SelectedValues.Clear();
+            _page.ClearAllFilters();
+            
+            foreach (var col in _tableView.Columns)
+            {
+                if (col is not null)
+                {
+                    col.IsFiltered = false;
+                }
+            }
+        }
+
+        _page.RebuildGroupedView();
     }
 }
