@@ -47,11 +47,13 @@ mc:Ignorable="d">
                     Grid.Row="1"
                     ItemsSource="{x:Bind FlatItems, Mode=OneWay}"
                     AutoGenerateColumns="False"
-                    SelectionMode="Extended">
+                    SelectionMode="Extended"
+                    Sorting="OnTableSorting"
+                    ClearSorting="OnTableClearSorting">
                     
                     <tableview:TableView.Columns>
                         <!-- Group/Name Column with expand/collapse button -->
-                        <tableview:TableViewTemplateColumn Header="Group / Name" Width="2*">
+                        <tableview:TableViewTemplateColumn Header="Group / Name" Width="2*" Tag="FirstName" CanSort="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <!-- Group Header Row -->
@@ -84,7 +86,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Last Name Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Last Name" Width="*">
+                        <tableview:TableViewTemplateColumn Header="Last Name" Width="*" Tag="LastName" CanSort="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.LastName, Mode=OneWay}"
@@ -94,7 +96,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Email Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Email" Width="2*">
+                        <tableview:TableViewTemplateColumn Header="Email" Width="2*" Tag="Email" CanSort="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.Email, Mode=OneWay}"
@@ -104,7 +106,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Department Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Department" Width="*">
+                        <tableview:TableViewTemplateColumn Header="Department" Width="*" Tag="Department" CanSort="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.Department, Mode=OneWay}"
@@ -114,7 +116,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Gender Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Gender" Width="100">
+                        <tableview:TableViewTemplateColumn Header="Gender" Width="100" Tag="Gender" CanSort="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.Gender, Mode=OneWay}"
@@ -124,7 +126,7 @@ mc:Ignorable="d">
                         </tableview:TableViewTemplateColumn>
 
                         <!-- Designation Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Designation" Width="*">
+                        <tableview:TableViewTemplateColumn Header="Designation" Width="*" Tag="Designation" CanSort="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="pages:FlatGroupItem">
                                     <TextBlock Text="{x:Bind DataItem.Designation, Mode=OneWay}"

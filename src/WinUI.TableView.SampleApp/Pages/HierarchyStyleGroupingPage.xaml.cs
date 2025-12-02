@@ -55,6 +55,7 @@ public sealed class FlatGroupItem : INotifyPropertyChanged
             {
                 _isExpanded = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(ChevronGlyph)); // Notify that the chevron glyph changed too
             }
         }
     }
@@ -72,7 +73,7 @@ public sealed class FlatGroupItem : INotifyPropertyChanged
     /// <summary>
     /// Icon glyph for expand/collapse chevron
     /// </summary>
-    public string ChevronGlyph => IsExpanded ? "\uE70D" /*ChevronDown*/ : "\uE70E" /*ChevronRight*/;
+    public string ChevronGlyph => IsExpanded ? "\uE70E" /*ChevronDown*/ : "\uE76C" /*ChevronRight*/;
 
     public event PropertyChangedEventHandler? PropertyChanged;
     private void OnPropertyChanged([CallerMemberName] string? name = null)
@@ -87,6 +88,8 @@ public sealed partial class HierarchyStyleGroupingPage : Page
 {
     public ObservableCollection<FlatGroupItem> FlatItems { get; } = [];
     private string _currentGroupProperty = "Department";
+    private string? _sortPropertyName;
+    private SortDirection? _sortDirection;
 
     public HierarchyStyleGroupingPage()
     {
@@ -125,7 +128,8 @@ public sealed partial class HierarchyStyleGroupingPage : Page
         if (string.IsNullOrEmpty(_currentGroupProperty))
         {
             // No grouping - just show all items flat
-            foreach (var item in viewModel.Items)
+            var items = ApplySorting(viewModel.Items);
+            foreach (var item in items)
             {
                 FlatItems.Add(new FlatGroupItem(item, depth: 0, isGroupHeader: false));
             }
@@ -154,10 +158,11 @@ public sealed partial class HierarchyStyleGroupingPage : Page
 
             FlatItems.Add(headerItem);
 
-            // Add group items at depth 1 (only if expanded)
+            // Add group items at depth 1 (only if expanded), with sorting applied
             if (group.IsExpanded)
             {
-                foreach (var dataItem in group.Items)
+                var sortedItems = ApplySorting(group.Items);
+                foreach (var dataItem in sortedItems)
                 {
                     FlatItems.Add(new FlatGroupItem(
                         item: dataItem,
@@ -205,6 +210,41 @@ public sealed partial class HierarchyStyleGroupingPage : Page
             "Gender" => item.Gender,
             "Designation" => item.Designation,
             _ => null
+        };
+    }
+
+    /// <summary>
+    /// Applies sorting to a collection of items based on current sort state
+    /// </summary>
+    private IEnumerable<ExampleModel> ApplySorting(IEnumerable<ExampleModel> items)
+    {
+        if (_sortDirection is null || string.IsNullOrEmpty(_sortPropertyName))
+        {
+            return items;
+        }
+
+        // Apply sorting based on property name and direction
+        return (_sortPropertyName, _sortDirection) switch
+        {
+            ("FirstName", SortDirection.Ascending) => items.OrderBy(i => i.FirstName, StringComparer.OrdinalIgnoreCase),
+            ("FirstName", SortDirection.Descending) => items.OrderByDescending(i => i.FirstName, StringComparer.OrdinalIgnoreCase),
+            ("LastName", SortDirection.Ascending) => items.OrderBy(i => i.LastName, StringComparer.OrdinalIgnoreCase),
+            ("LastName", SortDirection.Descending) => items.OrderByDescending(i => i.LastName, StringComparer.OrdinalIgnoreCase),
+            ("Email", SortDirection.Ascending) => items.OrderBy(i => i.Email, StringComparer.OrdinalIgnoreCase),
+            ("Email", SortDirection.Descending) => items.OrderByDescending(i => i.Email, StringComparer.OrdinalIgnoreCase),
+            ("Gender", SortDirection.Ascending) => items.OrderBy(i => i.Gender, StringComparer.OrdinalIgnoreCase),
+            ("Gender", SortDirection.Descending) => items.OrderByDescending(i => i.Gender, StringComparer.OrdinalIgnoreCase),
+            ("Department", SortDirection.Ascending) => items.OrderBy(i => i.Department, StringComparer.OrdinalIgnoreCase),
+            ("Department", SortDirection.Descending) => items.OrderByDescending(i => i.Department, StringComparer.OrdinalIgnoreCase),
+            ("Designation", SortDirection.Ascending) => items.OrderBy(i => i.Designation, StringComparer.OrdinalIgnoreCase),
+            ("Designation", SortDirection.Descending) => items.OrderByDescending(i => i.Designation, StringComparer.OrdinalIgnoreCase),
+            ("Dob", SortDirection.Ascending) => items.OrderBy(i => i.Dob),
+            ("Dob", SortDirection.Descending) => items.OrderByDescending(i => i.Dob),
+            ("ActiveAt", SortDirection.Ascending) => items.OrderBy(i => i.ActiveAt),
+            ("ActiveAt", SortDirection.Descending) => items.OrderByDescending(i => i.ActiveAt),
+            ("IsActive", SortDirection.Ascending) => items.OrderBy(i => i.IsActive),
+            ("IsActive", SortDirection.Descending) => items.OrderByDescending(i => i.IsActive),
+            _ => items
         };
     }
 
@@ -332,5 +372,54 @@ public sealed partial class HierarchyStyleGroupingPage : Page
     private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
     {
         RebuildGroupedView();
+    }
+
+    /// <summary>
+    /// Handles column sorting
+    /// </summary>
+    private void OnTableSorting(object sender, TableViewSortingEventArgs e)
+    {
+        if (e.Column?.Tag is not string propertyName)
+        {
+            return;
+        }
+
+        // Toggle sort direction: null ? Ascending ? Descending ? null
+        var nextDirection = e.Column.SortDirection switch
+        {
+            SortDirection.Ascending => SortDirection.Descending,
+            SortDirection.Descending => (SortDirection?)null,
+            _ => SortDirection.Ascending
+        };
+
+        // Update column sort direction
+        e.Column.SortDirection = nextDirection;
+
+        // Update our tracking fields
+        _sortPropertyName = nextDirection.HasValue ? propertyName : null;
+        _sortDirection = nextDirection;
+
+        // Rebuild the view with new sort
+        RebuildGroupedView();
+
+        e.Handled = true;
+    }
+
+    /// <summary>
+    /// Handles clearing sorting
+    /// </summary>
+    private void OnTableClearSorting(object sender, TableViewClearSortingEventArgs e)
+    {
+        if (e.Column is not null)
+        {
+            e.Column.SortDirection = null;
+        }
+
+        _sortPropertyName = null;
+        _sortDirection = null;
+
+        RebuildGroupedView();
+
+        e.Handled = true;
     }
 }
