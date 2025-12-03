@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Windows.Storage.BulkAccess;
 using Windows.Storage.FileProperties;
@@ -85,4 +85,40 @@ public class FileInformationAdapter : IGroupableItem
     /// Gets the thumbnail for this item (if available).
     /// </summary>
     public StorageItemThumbnail? Thumbnail => _fileInfo?.Thumbnail ?? _folderInfo?.Thumbnail;
+
+    // ✅ Display properties for UI binding
+    public string SizeDisplay => FormatSize(Size);
+    public string DateModifiedDisplay => DateModified.ToString("g");
+    public string FileIcon => GetFileIcon();
+
+    private string FormatSize(ulong bytes)
+    {
+        if (bytes == 0) return "0 bytes";
+        string[] sizes = { "bytes", "KB", "MB", "GB", "TB" };
+        int order = 0;
+        double size = bytes;
+        while (size >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+        return $"{size:0.##} {sizes[order]}";
+    }
+
+    private string GetFileIcon()
+    {
+        if (ItemType == "Folder") return "\uE8B7";
+        
+        var fileType = FileType?.ToLowerInvariant() ?? string.Empty;
+        return fileType switch
+        {
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" => "\uEB9F", // Image
+            ".mp4" or ".avi" or ".mkv" or ".mov" => "\uE8B2", // Video
+            ".mp3" or ".wav" or ".flac" => "\uE8D6", // Music
+            ".zip" or ".rar" or ".7z" => "\uE8B5", // Archive
+            ".exe" or ".msi" => "\uE756", // Application
+            ".pdf" => "\uE8A5", // PDF
+            _ => "\uE8A5" // Default document
+        };
+    }
 }

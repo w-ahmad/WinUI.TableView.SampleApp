@@ -57,6 +57,15 @@ public class ExampleModelAdapter : IGroupableItem
     /// <inheritdoc/>
     public object UnderlyingItem => _model;
 
+    /// <inheritdoc/>
+    public string SizeDisplay => "N/A"; // Not applicable for person records
+
+    /// <inheritdoc/>
+    public string DateModifiedDisplay => DateModified.ToString("g");
+
+    /// <inheritdoc/>
+    public string FileIcon => "\uE77B"; // Person icon (Segoe MDL2 Assets)
+
     /// <summary>
     /// Gets the underlying ExampleModel.
     /// </summary>

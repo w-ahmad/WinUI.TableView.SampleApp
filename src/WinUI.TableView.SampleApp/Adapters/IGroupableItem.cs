@@ -44,4 +44,19 @@ public interface IGroupableItem
     /// Gets the underlying data object.
     /// </summary>
     object UnderlyingItem { get; }
+
+    /// <summary>
+    /// Gets a formatted display string for the size.
+    /// </summary>
+    string SizeDisplay { get; }
+
+    /// <summary>
+    /// Gets a formatted display string for the date modified.
+    /// </summary>
+    string DateModifiedDisplay { get; }
+
+    /// <summary>
+    /// Gets the icon glyph for the file/folder type.
+    /// </summary>
+    string FileIcon { get; }
 }
