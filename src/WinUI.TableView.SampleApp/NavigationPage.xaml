@@ -148,7 +148,6 @@
                         <FontIcon Glyph="&#xE8FD;" />
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.MenuItems>
-                        <NavigationViewItem Content="Hierarchy-Style Grouping" />
                         <NavigationViewItem Content="Storage Grouping (Files)" />
                     </NavigationViewItem.MenuItems>
                 </NavigationViewItem>
