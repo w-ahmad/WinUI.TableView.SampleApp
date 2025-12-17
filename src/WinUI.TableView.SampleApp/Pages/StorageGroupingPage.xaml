@@ -94,6 +94,7 @@
         <tv:TableView Grid.Row="1" 
                       x:Name="StorageTable"
                       ItemsSource="{x:Bind FlatItems, Mode=OneWay}"
+                      AutoGenerateColumns="False"
                       SelectionMode="Extended"
                       CanSortColumns="True"
                       CanResizeColumns="True"

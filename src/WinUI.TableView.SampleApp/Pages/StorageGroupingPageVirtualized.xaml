@@ -4,28 +4,35 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:tv="using:WinUI.TableView"
+    xmlns:tableview="using:WinUI.TableView"
     xmlns:adapters="using:WinUI.TableView.SampleApp.Adapters"
     xmlns:local="using:WinUI.TableView.SampleApp.Pages"
     xmlns:conv="using:WinUI.TableView.SampleApp.Converters"
     mc:Ignorable="d">
 
     <Page.Resources>
-        <!-- ? CHANGE: DataTemplate now binds to ICollectionViewGroup instead of StorageFlatGroupItem -->
-        <DataTemplate x:Key="GroupHeaderTemplate" x:DataType="tv:ICollectionViewGroup">
+        <!-- UI Converters -->
+        <conv:BoolToChevronConverter x:Key="BoolToChevronConverter"/>
+        
+        <!-- Group Header Template for CollectionView grouping -->
+        <DataTemplate x:Key="GroupHeaderTemplate" x:DataType="tableview:ICollectionViewGroup">
             <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                   Padding="16,12"
                   CornerRadius="4"
-                  Margin="0,4">
+                  Margin="0,4"
+                  BorderThickness="1"
+                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <!-- ? CHANGE: Chevron icon based on IsExpanded (automatic!) -->
+                    <!-- Expand/Collapse Indicator -->
                     <FontIcon Glyph="{x:Bind IsExpanded, Mode=OneWay, Converter={StaticResource BoolToChevronConverter}}"
                               FontFamily="Segoe MDL2 Assets"
                               FontSize="14"
                               Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                     
-                    <!-- ? CHANGE: Group name and item count -->
-                    <TextBlock FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center">
+                    <!-- Group Information -->
+                    <TextBlock FontWeight="SemiBold" 
+                              FontSize="14" 
+                              VerticalAlignment="Center">
                         <Run Text="{x:Bind Group}"/>
                         <Run Text=" (" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         <Run Text="{x:Bind GroupItems.Count}" 
@@ -35,9 +42,6 @@
                 </StackPanel>
             </Grid>
         </DataTemplate>
-
-        <!-- ? ADDED: Converter for chevron icon -->
-        <conv:BoolToChevronConverter x:Key="BoolToChevronConverter"/>
     </Page.Resources>
 
     <Grid Padding="24" RowSpacing="16">
@@ -49,11 +53,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
+        <!-- Page Header -->
         <StackPanel Grid.Row="0" Spacing="8">
-            <TextBlock Text="Storage Grouping (Virtualized)" 
+            <TextBlock Text="File System Grouping" 
                        Style="{StaticResource TitleTextBlockStyle}"/>
-            <TextBlock Text="Production-ready implementation using CollectionView grouping (preserves virtualization)" 
+            <TextBlock Text="Production-ready file system grouping with high-performance loading and CollectionView virtualization" 
                        Style="{StaticResource BodyTextBlockStyle}"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
         </StackPanel>
@@ -110,33 +114,36 @@
                     Margin="16,0,0,0"/>
         </Grid>
 
-        <!-- ? REMOVED: Expand/Collapse All buttons (automatic with CollectionView!) -->
-
         <!-- Loading indicator -->
         <ProgressBar Grid.Row="2" 
                      IsIndeterminate="True" 
                      Visibility="{x:Bind IsLoading, Mode=OneWay}"/>
 
-        <!-- ? CHANGE: TableView now binds directly to _collectionView -->
-        <tv:TableView x:Name="StorageTable"
-                      Grid.Row="3"
-                      GroupHeaderTemplate="{StaticResource GroupHeaderTemplate}"
-                      Sorting="OnTableSorting"
-                      ClearSorting="OnTableClearSorting"
-                      SelectionMode="Extended"
-                      BorderThickness="1"
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                      CornerRadius="8">
+        <!-- Main Data Table with Grouping -->
+        <tableview:TableView x:Name="StorageTable"
+                            Grid.Row="3"
+                            AutoGenerateColumns="False"
+                            GroupHeaderTemplate="{StaticResource GroupHeaderTemplate}"
+                            Sorting="OnTableSorting"
+                            ClearSorting="OnTableClearSorting"
+                            SelectionMode="Extended"
+                            BorderThickness="1"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            CornerRadius="8">
 
-            <!-- ? NO CHANGE: Columns bind to IGroupableItem properties (same as before) -->
-            <tv:TableView.Columns>
-                <tv:TableViewTemplateColumn Header="Name" 
-                                           Tag="Name"
-                                           Width="2*"
-                                           CanSort="True">
-                    <tv:TableViewTemplateColumn.CellTemplate>
+            <!-- Data Columns -->
+            <tableview:TableView.Columns>
+                <!-- File Name Column with Icon -->
+                <tableview:TableViewTemplateColumn 
+                    Header="Name" 
+                    Tag="Name"
+                    Width="2*"
+                    CanSort="True">
+                    <tableview:TableViewTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="adapters:IGroupableItem">
-                            <StackPanel Orientation="Horizontal" Spacing="8" Padding="8,4">
+                            <StackPanel Orientation="Horizontal" 
+                                       Spacing="8" 
+                                       Padding="8,4">
                                 <FontIcon Glyph="{x:Bind FileIcon}" 
                                          FontFamily="Segoe MDL2 Assets"
                                          FontSize="16"
@@ -145,34 +152,42 @@
                                           VerticalAlignment="Center"/>
                             </StackPanel>
                         </DataTemplate>
-                    </tv:TableViewTemplateColumn.CellTemplate>
-                </tv:TableViewTemplateColumn>
+                    </tableview:TableViewTemplateColumn.CellTemplate>
+                </tableview:TableViewTemplateColumn>
 
-                <tv:TableViewTextColumn Header="Type" 
-                                       Tag="ItemType"
-                                       Binding="{Binding ItemType}"
-                                       Width="*"
-                                       CanSort="True"/>
+                <!-- File Type Column -->
+                <tableview:TableViewTextColumn 
+                    Header="Type" 
+                    Tag="ItemType"
+                    Binding="{Binding ItemType}"
+                    Width="*"
+                    CanSort="True"/>
 
-                <tv:TableViewTextColumn Header="Size" 
-                                       Tag="Size"
-                                       Binding="{Binding SizeDisplay}"
-                                       Width="*"
-                                       CanSort="True"/>
+                <!-- File Size Column -->
+                <tableview:TableViewTextColumn 
+                    Header="Size" 
+                    Tag="Size"
+                    Binding="{Binding SizeDisplay}"
+                    Width="*"
+                    CanSort="True"/>
 
-                <tv:TableViewTextColumn Header="Date Modified" 
-                                       Tag="DateModified"
-                                       Binding="{Binding DateModifiedDisplay}"
-                                       Width="1.5*"
-                                       CanSort="True"/>
+                <!-- Date Modified Column -->
+                <tableview:TableViewTextColumn 
+                    Header="Date Modified" 
+                    Tag="DateModified"
+                    Binding="{Binding DateModifiedDisplay}"
+                    Width="1.5*"
+                    CanSort="True"/>
 
-                <tv:TableViewTextColumn Header="Extension" 
-                                       Tag="FileType"
-                                       Binding="{Binding FileType}"
-                                       Width="*"
-                                       CanSort="True"/>
-            </tv:TableView.Columns>
-        </tv:TableView>
+                <!-- File Extension Column -->
+                <tableview:TableViewTextColumn 
+                    Header="Extension" 
+                    Tag="FileType"
+                    Binding="{Binding FileType}"
+                    Width="*"
+                    CanSort="True"/>
+            </tableview:TableView.Columns>
+        </tableview:TableView>
 
         <!-- Status bar -->
         <Grid Grid.Row="4" 

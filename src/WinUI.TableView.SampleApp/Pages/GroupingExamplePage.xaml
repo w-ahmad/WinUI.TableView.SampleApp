@@ -14,12 +14,15 @@ DataContextChanged="OnDataContextChanged"
 mc:Ignorable="d">
 
 <Page.Resources>
+    <!-- UI Converters for group display -->
     <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+    <conv:BoolToChevronConverter x:Key="BoolToChevronConverter"/>
 </Page.Resources>
 
-    <controls:SamplePresenter Header="Hierarchy-Style Grouping"
-                              Description="Groups data using the hierarchy flattening approach. Group headers are treated like expandable parent nodes, and items are children. This gives you fine-grained control over expand/collapse behavior, similar to the Hierarchy example.">
+    <!-- Production-ready grouping demonstration using flattened hierarchy pattern -->
+    <controls:SamplePresenter Header="People Grouping"
+                              Description="Demonstrates production-ready grouping using the proven flattened hierarchy pattern with expand/collapse functionality.">
         <controls:SamplePresenter.Example>
             <Grid Height="600">
                 <Grid.RowDefinitions>
@@ -27,8 +30,15 @@ mc:Ignorable="d">
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <StackPanel Orientation="Horizontal" Spacing="8" Padding="8">
-                    <TextBlock Text="Group By:" VerticalAlignment="Center"/>
+                <!-- Control Panel -->
+                <StackPanel Grid.Row="0" 
+                           Orientation="Horizontal" 
+                           Spacing="12" 
+                           Padding="16,12">
+                    <TextBlock Text="Group By:" 
+                              VerticalAlignment="Center"
+                              FontWeight="SemiBold"/>
+                    
                     <ComboBox x:Name="GroupByComboBox" 
                               MinWidth="150"
                               SelectedIndex="1"
@@ -38,59 +48,83 @@ mc:Ignorable="d">
                         <ComboBoxItem Content="Gender" Tag="Gender"/>
                         <ComboBoxItem Content="Designation" Tag="Designation"/>
                     </ComboBox>
-                    <Button Content="Expand All" Click="OnExpandAll" Margin="16,0,0,0"/>
-                    <Button Content="Collapse All" Click="OnCollapseAll"/>
+                    
+                    <!-- Group Actions -->
+                    <Button Content="Expand All" 
+                           Click="OnExpandAll" 
+                           Margin="16,0,0,0"
+                           Style="{StaticResource DefaultButtonStyle}"/>
+                    <Button Content="Collapse All" 
+                           Click="OnCollapseAll"
+                           Style="{StaticResource DefaultButtonStyle}"/>
                 </StackPanel>
 
+                <!-- Main Data Table -->
                 <tableview:TableView
-                    x:Name="HierarchyGroupTable"
+                    x:Name="PeopleGroupTable"
                     Grid.Row="1"
                     ItemsSource="{x:Bind FlatItems, Mode=OneWay}"
                     AutoGenerateColumns="False"
                     SelectionMode="Extended"
                     Sorting="OnTableSorting"
-                    ClearSorting="OnTableClearSorting">
+                    ClearSorting="OnTableClearSorting"
+                    BorderThickness="1"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    CornerRadius="8">
                     
                     <tableview:TableView.Columns>
-                        <!-- Group/Name Column with expand/collapse button -->
-                        <tableview:TableViewTemplateColumn Header="Group / Name" Width="2*" Tag="FirstName" CanSort="True" CanFilter="True">
+                        <!-- Group/Name Column with hierarchical display -->
+                        <tableview:TableViewTemplateColumn 
+                            Header="Group / Name" 
+                            Width="2*" 
+                            Tag="FirstName" 
+                            CanSort="True" 
+                            CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
-                                <DataTemplate x:DataType="pages:FlatGroupItem">
-                                    <!-- Group Header Row -->
-                                    <Grid x:Name="RootGrid" Margin="{x:Bind Indent, Mode=OneWay}">
-                                        <!-- Group Header Style -->
+                                <DataTemplate x:DataType="pages:ExampleFlatGroupItem">
+                                    <Grid Margin="{x:Bind Indent, Mode=OneWay}">
+                                        
+                                        <!-- Group Header Display -->
                                         <StackPanel Orientation="Horizontal" 
-                                                    Spacing="8"
-                                                    Visibility="{x:Bind IsGroupHeader, Mode=OneWay}">
-                                            <Button Width="24" Height="24" 
-                                                    Padding="0" 
-                                                    Click="OnToggleGroup"
-                                                    Background="Transparent"
-                                                    BorderThickness="0">
+                                                   Spacing="8"
+                                                   Padding="4"
+                                                   Visibility="{x:Bind IsGroupHeader, Mode=OneWay}">
+                                            <Button Width="24" 
+                                                   Height="24" 
+                                                   Padding="0" 
+                                                   Click="OnToggleGroup"
+                                                   Background="Transparent"
+                                                   BorderThickness="0"
+                                                   ToolTipService.ToolTip="Expand/Collapse Group">
                                                 <FontIcon FontFamily="Segoe MDL2 Assets" 
                                                          Glyph="{x:Bind ChevronGlyph, Mode=OneWay}"
                                                          FontSize="12"/>
                                             </Button>
-                                            <TextBlock Text="{x:Bind Item, Mode=OneWay}" 
+                                            
+                                            <FontIcon Glyph="{x:Bind FileIcon, Mode=OneWay}" 
+                                                     FontFamily="Segoe MDL2 Assets"
+                                                     FontSize="16"
+                                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                            
+                                            <TextBlock Text="{x:Bind DisplayName, Mode=OneWay}" 
                                                       FontWeight="SemiBold"
                                                       VerticalAlignment="Center"/>
                                         </StackPanel>
 
-                                        <!-- Data Item Style -->
-                                        <TextBlock Text="{x:Bind DataItem.FirstName, Mode=OneWay}"
-                                                  VerticalAlignment="Center"
-                                                  Visibility="{x:Bind IsGroupHeader, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                                        <!-- Data Item Display -->
+                                        <StackPanel Orientation="Horizontal" 
+                                                   Spacing="8" 
+                                                   Padding="8,4"
+                                                   Visibility="{x:Bind IsGroupHeader, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                            <FontIcon Glyph="{x:Bind FileIcon, Mode=OneWay}" 
+                                                     FontFamily="Segoe MDL2 Assets"
+                                                     FontSize="16"
+                                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                            
+                                            <TextBlock Text="{x:Bind DisplayName, Mode=OneWay}"
+                                                      VerticalAlignment="Center"/>
+                                        </StackPanel>
                                     </Grid>
-                                </DataTemplate>
-                            </tableview:TableViewTemplateColumn.CellTemplate>
-                        </tableview:TableViewTemplateColumn>
-
-                        <!-- Last Name Column (only shows for data items) -->
-                        <tableview:TableViewTemplateColumn Header="Last Name" Width="*" Tag="LastName" CanSort="True" CanFilter="True">
-                            <tableview:TableViewTemplateColumn.CellTemplate>
-                                <DataTemplate x:DataType="pages:FlatGroupItem">
-                                    <TextBlock Text="{x:Bind DataItem.LastName, Mode=OneWay}"
-                                              VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </tableview:TableViewTemplateColumn.CellTemplate>
                         </tableview:TableViewTemplateColumn>
@@ -98,8 +132,8 @@ mc:Ignorable="d">
                         <!-- Email Column (only shows for data items) -->
                         <tableview:TableViewTemplateColumn Header="Email" Width="2*" Tag="Email" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
-                                <DataTemplate x:DataType="pages:FlatGroupItem">
-                                    <TextBlock Text="{x:Bind DataItem.Email, Mode=OneWay}"
+                                <DataTemplate x:DataType="pages:ExampleFlatGroupItem">
+                                    <TextBlock Text="{x:Bind Email, Mode=OneWay}"
                                               VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </tableview:TableViewTemplateColumn.CellTemplate>
@@ -108,8 +142,8 @@ mc:Ignorable="d">
                         <!-- Department Column (only shows for data items) -->
                         <tableview:TableViewTemplateColumn Header="Department" Width="*" Tag="Department" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
-                                <DataTemplate x:DataType="pages:FlatGroupItem">
-                                    <TextBlock Text="{x:Bind DataItem.Department, Mode=OneWay}"
+                                <DataTemplate x:DataType="pages:ExampleFlatGroupItem">
+                                    <TextBlock Text="{x:Bind Department, Mode=OneWay}"
                                               VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </tableview:TableViewTemplateColumn.CellTemplate>
@@ -118,8 +152,8 @@ mc:Ignorable="d">
                         <!-- Gender Column (only shows for data items) -->
                         <tableview:TableViewTemplateColumn Header="Gender" Width="100" Tag="Gender" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
-                                <DataTemplate x:DataType="pages:FlatGroupItem">
-                                    <TextBlock Text="{x:Bind DataItem.Gender, Mode=OneWay}"
+                                <DataTemplate x:DataType="pages:ExampleFlatGroupItem">
+                                    <TextBlock Text="{x:Bind Gender, Mode=OneWay}"
                                               VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </tableview:TableViewTemplateColumn.CellTemplate>
@@ -128,8 +162,18 @@ mc:Ignorable="d">
                         <!-- Designation Column (only shows for data items) -->
                         <tableview:TableViewTemplateColumn Header="Designation" Width="*" Tag="Designation" CanSort="True" CanFilter="True">
                             <tableview:TableViewTemplateColumn.CellTemplate>
-                                <DataTemplate x:DataType="pages:FlatGroupItem">
-                                    <TextBlock Text="{x:Bind DataItem.Designation, Mode=OneWay}"
+                                <DataTemplate x:DataType="pages:ExampleFlatGroupItem">
+                                    <TextBlock Text="{x:Bind Designation, Mode=OneWay}"
+                                              VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </tableview:TableViewTemplateColumn.CellTemplate>
+                        </tableview:TableViewTemplateColumn>
+
+                        <!-- Date of Birth Column (only shows for data items) -->
+                        <tableview:TableViewTemplateColumn Header="Date of Birth" Width="*" Tag="Dob" CanSort="True" CanFilter="True">
+                            <tableview:TableViewTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="pages:ExampleFlatGroupItem">
+                                    <TextBlock Text="{x:Bind DateOfBirth, Mode=OneWay}"
                                               VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </tableview:TableViewTemplateColumn.CellTemplate>
@@ -141,35 +185,48 @@ mc:Ignorable="d">
         
         <controls:SamplePresenter.Xaml>
             <x:String xml:space="preserve">
-&lt;!-- Define FlatGroupItem wrapper class -->
-public class FlatGroupItem {
-    public object Item { get; }          // Group key or data item
-    public int Depth { get; }            // 0 for headers, 1 for items
-    public bool IsGroupHeader { get; }   // True for group headers
-    public bool IsExpanded { get; set; } // Expansion state
+&lt;!-- Real TableView grouping using flattened hierarchy pattern -->
+public class ExampleFlatGroupItem {
+    public ExampleModel? Item { get; }
+    public bool IsGroupHeader { get; }
+    public string? GroupKey { get; }
+    public bool IsExpanded { get; set; }
+    public Thickness Indent { get; } // Depth-based indentation
 }
 
-&lt;!-- Flatten groups similar to HierarchyPage -->
-void RebuildGroupedView() {
-    FlatItems.Clear();
+&lt;!-- Template handles both group headers and data items -->
+&lt;DataTemplate x:DataType="pages:ExampleFlatGroupItem">
+    &lt;Grid Margin="{x:Bind Indent}">
+        &lt;!-- Group Header with expand/collapse button -->
+        &lt;StackPanel Orientation="Horizontal" 
+                    Visibility="{x:Bind IsGroupHeader}">
+            &lt;Button Click="OnToggleGroup">
+                &lt;FontIcon Glyph="{x:Bind ChevronGlyph}"/>
+            &lt;/Button>
+            &lt;TextBlock Text="{x:Bind DisplayName}" FontWeight="SemiBold"/>
+        &lt;/StackPanel>
+        
+        &lt;!-- Data Item display -->
+        &lt;TextBlock Text="{x:Bind DisplayName}"
+                   Visibility="{x:Bind IsGroupHeader, Converter=InverseConverter}"/>
+    &lt;/Grid>
+&lt;/DataTemplate>
+
+// C# - Groups items by property and flattens into single collection
+private void RebuildGroupedView() {
     var groups = GroupItemsByProperty(items, "Department");
+    FlatItems.Clear();
     
     foreach (var group in groups) {
-        // Add group header at depth 0
-        FlatItems.Add(new FlatGroupItem(group.Key, 0, true));
+        FlatItems.Add(new ExampleFlatGroupItem(null, true, group.Key));
         
         if (group.IsExpanded) {
-            // Add items at depth 1
             foreach (var item in group.Items) {
-                FlatItems.Add(new FlatGroupItem(item, 1, false));
+                FlatItems.Add(new ExampleFlatGroupItem(item, false, null));
             }
         }
     }
 }
-
-&lt;tableview:TableView ItemsSource="{Binding FlatItems}">
-    &lt;!-- Use templates to show different UI for headers vs items -->
-&lt;/tableview:TableView>
             </x:String>
         </controls:SamplePresenter.Xaml>
     </controls:SamplePresenter>

@@ -12,46 +12,53 @@ using Windows.Storage.BulkAccess;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
 using WinUI.TableView.SampleApp.Adapters;
-using WinUI.TableView.SampleApp.Helpers;
 
 namespace WinUI.TableView.SampleApp.Pages;
 
 /// <summary>
-/// Demonstrates production-ready file system grouping using CollectionView (VIRTUALIZATION PRESERVED).
-/// 
-/// This implementation replaces the manual flattening approach with CollectionView-based grouping.
-/// Benefits:
-/// - 12.5x faster file loading (FileInformationFactory)
-/// - 60x faster group expand/collapse
-/// - 76% less memory usage
-/// - Smooth 60fps scrolling (virtualization preserved)
-/// - 55% less code
+/// Demonstrates production-ready file system grouping using the CollectionViewSourceBridge pattern.
+/// This implementation provides optimal performance for large file collections while maintaining
+/// smooth scrolling and responsive UI.
 /// </summary>
 public sealed partial class StorageGroupingPageVirtualized : Page, INotifyPropertyChanged
 {
-    // ? CHANGE: Use TableView's CollectionView instead of custom ObservableCollection
-    // TableView creates and manages the CollectionView automatically when ItemsSource is set
+    private readonly CollectionViewSourceBridge _groupingBridge;
+    private readonly ObservableCollection<IGroupableItem> _sourceItems = [];
     
-    private ObservableCollection<IGroupableItem> _sourceItems = [];
     private string _currentGroupProperty = "DateModified";
-    
     private bool _isLoading;
     private string _loadingStatus = string.Empty;
     private string _statusMessage = "Click 'Load Files' to browse a folder";
     private string _itemCountText = string.Empty;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StorageGroupingPageVirtualized"/> class.
+    /// </summary>
     public StorageGroupingPageVirtualized()
     {
         InitializeComponent();
         
-        // ? CHANGE: Bind TableView to source collection
-        // TableView creates CollectionView internally
-        StorageTable.ItemsSource = _sourceItems;
+        // Setup CollectionViewSourceBridge for automatic grouping management
+        var collectionViewSource = new Microsoft.UI.Xaml.Data.CollectionViewSource
+        {
+            Source = _sourceItems,
+            IsSourceGrouped = false
+        };
         
-        // ? CHANGE: Setup initial grouping declaratively
+        _groupingBridge = CollectionViewSourceBridgeFactory.CreateForStorageItems(collectionViewSource);
+        
+        // Bind TableView to the bridge's adapted items
+        StorageTable.ItemsSource = _groupingBridge.AdaptedItems;
+        
+        // Setup initial grouping
         UpdateGrouping();
     }
 
+    #region Properties
+
+    /// <summary>
+    /// Gets or sets a value indicating whether files are currently being loaded.
+    /// </summary>
     public bool IsLoading
     {
         get => _isLoading;
@@ -65,6 +72,9 @@ public sealed partial class StorageGroupingPageVirtualized : Page, INotifyProper
         }
     }
 
+    /// <summary>
+    /// Gets or sets the current loading status message.
+    /// </summary>
     public string LoadingStatus
     {
         get => _loadingStatus;
@@ -78,6 +88,9 @@ public sealed partial class StorageGroupingPageVirtualized : Page, INotifyProper
         }
     }
 
+    /// <summary>
+    /// Gets or sets the status message displayed to the user.
+    /// </summary>
     public string StatusMessage
     {
         get => _statusMessage;
@@ -91,6 +104,9 @@ public sealed partial class StorageGroupingPageVirtualized : Page, INotifyProper
         }
     }
 
+    /// <summary>
+    /// Gets or sets the item count text.
+    /// </summary>
     public string ItemCountText
     {
         get => _itemCountText;
@@ -104,33 +120,91 @@ public sealed partial class StorageGroupingPageVirtualized : Page, INotifyProper
         }
     }
 
-    /// <summary>
-    /// ? CHANGE: Simplified - no more manual grouping, CollectionView handles it!
-    /// Access CollectionView through StorageTable.CollectionView property.
-    /// </summary>
-    private void UpdateGrouping()
-    {
-        // ? CHANGE: Direct CollectionView manipulation in WinUI is different
-        // We need to handle grouping through the TableView's grouping capabilities
-        if (!string.IsNullOrEmpty(_currentGroupProperty))
-        {
-            // TODO: Implement proper grouping through TableView API
-            // For now, just update the property to trigger re-evaluation
-        }
-    }
+    /// <inheritdoc/>
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    #endregion
+
+    #region Event Handlers
 
     /// <summary>
-    /// ? CHANGE: Use FileInformationFactory for MUCH better performance (12.5x faster!)
-    /// 
-    /// Performance comparison for 10,000 files:
-    /// - Old approach (StorageItemAdapter): 50+ seconds
-    /// - New approach (FileInformationFactory): 4 seconds
+    /// Handles the Load Files button click event.
     /// </summary>
     private async void OnLoadFiles(object sender, RoutedEventArgs e)
     {
         await LoadFilesAsync();
     }
 
+    /// <summary>
+    /// Handles folder selection changes.
+    /// </summary>
+    private void OnFolderChanged(object sender, SelectionChangedEventArgs e)
+    {
+        StatusMessage = "Click 'Load Files' to browse this folder";
+        _sourceItems.Clear();
+        ItemCountText = string.Empty;
+    }
+
+    /// <summary>
+    /// Handles grouping property changes.
+    /// </summary>
+    private void OnGroupByChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem item)
+        {
+            _currentGroupProperty = item.Tag?.ToString() ?? string.Empty;
+            UpdateGrouping();
+            
+            StatusMessage = string.IsNullOrEmpty(_currentGroupProperty) 
+                ? "Grouping disabled" 
+                : $"Grouped by {item.Content}";
+        }
+    }
+
+    /// <summary>
+    /// Handles table sorting events.
+    /// </summary>
+    private void OnTableSorting(object sender, TableViewSortingEventArgs e)
+    {
+        if (e.Column?.Tag is string propertyName)
+        {
+            SortDirection? nextDirection = e.Column.SortDirection switch
+            {
+                SortDirection.Ascending => SortDirection.Descending,
+                SortDirection.Descending => null,
+                _ => SortDirection.Ascending
+            };
+
+            e.Column.SortDirection = nextDirection;
+            // Note: Sorting implementation would be added here if needed
+            e.Handled = true;
+        }
+    }
+
+    /// <summary>
+    /// Handles clearing table sorting.
+    /// </summary>
+    private void OnTableClearSorting(object sender, TableViewClearSortingEventArgs e)
+    {
+        if (e.Column is not null)
+        {
+            e.Column.SortDirection = null;
+        }
+        
+        // Note: Sort clearing implementation would be added here if needed
+        e.Handled = true;
+    }
+
+    #endregion
+
+    #region File Loading
+
+    /// <summary>
+    /// Loads files from the selected folder using FileInformationFactory for optimal performance.
+    /// </summary>
     private async Task LoadFilesAsync()
     {
         if (FolderComboBox.SelectedItem is not ComboBoxItem selectedFolder)
@@ -155,25 +229,22 @@ public sealed partial class StorageGroupingPageVirtualized : Page, INotifyProper
 
             LoadingStatus = $"Scanning {folderName}...";
 
-            // ? PRODUCTION: Use FileInformationFactory for optimal performance
+            // Use FileInformationFactory for optimal performance with large file collections
             var query = folder.CreateFileQuery(CommonFileQuery.OrderByName);
-            var factory = new FileInformationFactory(query, 
-                Windows.Storage.FileProperties.ThumbnailMode.ListView);
+            var factory = new FileInformationFactory(query, Windows.Storage.FileProperties.ThumbnailMode.ListView);
 
             // Get file count first
             var fileCount = await query.GetItemCountAsync();
             LoadingStatus = $"Loading {fileCount} files...";
 
-            // ? CHANGE: Load files in batches (properties are PRE-LOADED and CACHED!)
-            var fileInfos = await factory.GetFilesAsync(0, Math.Min(fileCount, 10000));
+            // Load files in batches with pre-loaded properties
+            const int maxFiles = 10000; // Reasonable limit for demonstration
+            var fileInfos = await factory.GetFilesAsync(0, Math.Min(fileCount, maxFiles));
 
-            // ? CHANGE: Use FileInformationAdapter (no async InitializeAsync needed!)
-            var adapters = fileInfos
-                .Select(f => new FileInformationAdapter(f) as IGroupableItem)
-                .ToList();
+            // Create adapters - FileInformationAdapter doesn't need async initialization
+            var adapters = fileInfos.Select(f => new FileInformationAdapter(f) as IGroupableItem);
 
-            // ? CHANGE: Update source - CollectionView auto-rebuilds groups!
-            _sourceItems.Clear();
+            // Update source collection - bridge will automatically handle grouping
             foreach (var adapter in adapters)
             {
                 _sourceItems.Add(adapter);
@@ -196,7 +267,10 @@ public sealed partial class StorageGroupingPageVirtualized : Page, INotifyProper
         }
     }
 
-    private async Task<StorageFolder?> GetKnownFolderAsync(string folderName)
+    /// <summary>
+    /// Gets a known folder by name.
+    /// </summary>
+    private static async Task<StorageFolder?> GetKnownFolderAsync(string folderName)
     {
         try
         {
@@ -216,89 +290,17 @@ public sealed partial class StorageGroupingPageVirtualized : Page, INotifyProper
         }
     }
 
-    /// <summary>
-    /// ? REMOVED: No more RebuildGroupedView() - CollectionView handles it automatically!
-    /// </summary>
+    #endregion
+
+    #region Grouping Management
 
     /// <summary>
-    /// ? REMOVED: No more manual ExpandGroup() / CollapseGroup()!
-    /// TableView's group headers are interactive by default.
-    /// User clicks group header -> ICollectionViewGroup.IsExpanded toggles -> CollectionView rebuilds view
+    /// Updates the current grouping using the CollectionViewSourceBridge.
     /// </summary>
-
-    private void OnFolderChanged(object sender, SelectionChangedEventArgs e)
+    private void UpdateGrouping()
     {
-        StatusMessage = "Click 'Load Files' to browse this folder";
-        _sourceItems.Clear();
-        ItemCountText = string.Empty;
+        _groupingBridge.SetGrouping(string.IsNullOrEmpty(_currentGroupProperty) ? null : _currentGroupProperty);
     }
 
-    /// <summary>
-    /// ? CHANGE: Simplified grouping change handler
-    /// </summary>
-    private void OnGroupByChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (sender is not ComboBox comboBox || comboBox.SelectedItem is not ComboBoxItem item)
-        {
-            return;
-        }
-
-        _currentGroupProperty = item.Tag?.ToString() ?? "";
-        UpdateGrouping();
-        
-        StatusMessage = string.IsNullOrEmpty(_currentGroupProperty) 
-            ? "Grouping disabled" 
-            : $"Grouped by {item.Content}";
-    }
-
-    /// <summary>
-    /// ? CHANGE: Use CollectionView.SortDescriptions (works seamlessly with grouping!)
-    /// </summary>
-    private void OnTableSorting(object sender, TableViewSortingEventArgs e)
-    {
-        if (e.Column?.Tag is not string propertyName)
-        {
-            return;
-        }
-
-        var nextDirection = e.Column.SortDirection switch
-        {
-            SortDirection.Ascending => SortDirection.Descending,
-            SortDirection.Descending => (SortDirection?)null,
-            _ => SortDirection.Ascending
-        };
-
-        e.Column.SortDirection = nextDirection;
-
-        // ? CHANGE: Handle sorting through TableView's built-in sorting
-        // TableView manages its own sorting state through column headers
-        // No need to manually manipulate CollectionView sort descriptions
-
-        e.Handled = true;
-    }
-
-    /// <summary>
-    /// ? CHANGE: Simplified clear sorting
-    /// </summary>
-    private void OnTableClearSorting(object sender, TableViewClearSortingEventArgs e)
-    {
-        if (e.Column is not null)
-        {
-            e.Column.SortDirection = null;
-        }
-
-        // ? CHANGE: TableView manages its own sorting state
-        // Clearing is handled through the column's SortDirection property
-        e.Handled = true;
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? name = null)
-        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    #endregion
 }
-
-/// <summary>
-/// ? REMOVED: StorageFlatGroupItem class completely deleted!
-/// No more wrapper objects - use adapters directly.
-/// This eliminates memory overhead and simplifies code.
-/// </summary>
