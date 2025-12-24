@@ -5,6 +5,10 @@
     <File Path="global.json" />
   </Folder>
   <Project Path="../WinUI.TableView/src/WinUI.TableView.csproj" />
+  <Project Path="../WinUI.TableView/tests/WinUI.TableView.Tests.csproj">
+    <Platform Project="x64" />
+    <Deploy />
+  </Project>
   <Project Path="WinUI.TableView.SampleApp.Uno/WinUI.TableView.SampleApp.Uno.csproj" />
   <Project Path="WinUI.TableView.SampleApp/WinUI.TableView.SampleApp.csproj">
     <Platform Project="x64" />
