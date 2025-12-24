@@ -8,13 +8,13 @@ using WinUI.TableView.SampleApp.Pages;
 
 namespace WinUI.TableView.SampleApp;
 
-public sealed partial class NavigationPage : Page
+public sealed partial class MainPage : Page
 {
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly UISettings _settings = new();
     private bool _canNavigate = true;
 
-    public NavigationPage()
+    public MainPage()
     {
         InitializeComponent();
 
@@ -31,11 +31,18 @@ public sealed partial class NavigationPage : Page
 
         await ExampleViewModel.InitializeItemsAsync();
 
+        SetLoading(false);
+
 #if DEBUG
         navigationView.SelectedItem = navigationView.MenuItems[2];
 #else
         navigationView.SelectedItem = overViewNavItem;
 #endif
+    }
+
+    internal void SetLoading(bool isLoading)
+    {
+        loadingIndicator.Visibility = isLoading ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void OnMainWindowActivated(object sender, WindowActivatedEventArgs args)
@@ -106,6 +113,7 @@ public sealed partial class NavigationPage : Page
                 "Sorting" => typeof(SortingPage),
                 "Custom Sorting" => typeof(CustomizeSortingPage),
                 "Data Export" => typeof(ExportPage),
+
                 _ => typeof(BlankPage)
             };
 

@@ -10,6 +10,7 @@ namespace WinUI.TableView.SampleApp;
 public partial class App : Application
 {
     private readonly Lazy<Window> _mainWindow = new(() => new Window());
+    private readonly Lazy<MainPage> _mainPage = new(() => new MainPage());
 
     public App()
     {
@@ -22,7 +23,7 @@ public partial class App : Application
         MainWindow.ExtendsContentIntoTitleBar = true;
         MainWindow.SystemBackdrop = new MicaBackdrop();
 #endif
-        MainWindow.Content ??= new NavigationPage();
+        MainWindow.Content = MainPage;
 #if DEBUG && !WINDOWS
         MainWindow.UseStudio();
         MainWindow.SetWindowIcon();
@@ -61,6 +62,8 @@ public partial class App : Application
 #endif
     }
 
+
+    public MainPage MainPage => _mainPage.Value;
     public Window MainWindow => _mainWindow.Value;
     public static new App Current => (App)Application.Current;
 }
