@@ -37,13 +37,12 @@ public class FilterHandler : ColumnFilterHandler
         bool isSelected(object value) => !existingItems.Any() || existingItems.Contains(value);
         var items = GetItems(column);
 
-        return items.Select(x => GetPropertyValue(x, column))
+        return [.. items.Select(x => GetPropertyValue(x, column))
                     .Where(x => string.IsNullOrEmpty(searchText) || x?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) is true)
                     .Distinct()
                     .Order()
                     .Select(x => x ?? "(Blank)")
-                    .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(searchText) || isSelected(x), x))
-                    .ToList();
+                    .Select(x => new TableViewFilterItem(!string.IsNullOrEmpty(searchText) || isSelected(x), x))];
     }
 
     public override void ApplyFilter(TableViewColumn column)
@@ -96,7 +95,7 @@ public class FilterHandler : ColumnFilterHandler
             }));
     }
 
-    private static bool CompareValue(IList<object> selectedValue, object? value)
+    private static bool CompareValue(ICollection<object?> selectedValue, object? value)
     {
         value = string.IsNullOrWhiteSpace(value?.ToString()) ? "(Blank)" : value;
         return selectedValue.Contains(value);
