@@ -113,7 +113,7 @@ public sealed partial class MainPage : Page
                 "Sorting" => typeof(SortingPage),
                 "Custom Sorting" => typeof(CustomizeSortingPage),
                 "Data Export" => typeof(ExportPage),
-
+                "Large Dataset" => typeof(LargeDataPage),
                 _ => typeof(BlankPage)
             };
 
