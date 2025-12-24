@@ -12,7 +12,7 @@ on:
 jobs:
   build_and_deploy_job:
     env:
-      DIST_PATH: src/WinUI.TableView.SampleApp.Uno/bin/Release/net9.0-browserwasm/publish/wwwroot
+      DIST_PATH: src/WinUI.TableView.SampleApp.Uno/bin/Release/net10.0-browserwasm/publish/wwwroot
       DotnetVersion: '10.0.x'
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
@@ -119,4 +119,5 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_GROUND_0D0F6A810 }}
           action: "close"
+
 
