@@ -47,34 +47,4 @@ public partial class ExampleModel : ObservableObject
     [ObservableProperty]
     [Display(AutoGenerateField = false)]
     public partial string? Avatar { get; set; }
-
-    internal static bool TryParseCsv(string csvLine, [NotNullWhen(true)] out ExampleModel? record)
-    {
-        try
-        {
-            var parts = csvLine.Split(',');
-            record = new ExampleModel
-            {
-                Id = int.Parse(parts[0]),
-                FirstName = parts[1],
-                LastName = parts[2],
-                Email = parts[3],
-                Gender = parts[4],
-                Dob = DateOnly.ParseExact(parts[5], "mm/dd/yyyy", CultureInfo.InvariantCulture),
-                IsActive = bool.Parse(parts[6]),
-                ActiveAt = TimeOnly.ParseExact(parts[7], "h:mm tt", CultureInfo.InvariantCulture),
-                Department = parts[8],
-                Designation = parts[9],
-                Address = parts[10],
-                Avatar = parts[11],
-            };
-
-            return true;
-        }
-        catch
-        {
-            record = null;
-            return false;
-        }
-    }
 }

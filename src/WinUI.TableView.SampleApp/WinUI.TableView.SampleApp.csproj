@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
     <PackageReference Include="Microsoft.WindowsAppSDK" />
     <PackageReference Include="ClosedXML" />
+    <PackageReference Include="Bogus" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -48,18 +49,6 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Content Update="Assets\data.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\sales_data.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\transactions_data.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <!--

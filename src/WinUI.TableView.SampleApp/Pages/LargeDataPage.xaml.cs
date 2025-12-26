@@ -16,12 +16,6 @@ public sealed partial class LargeDataPage : Page
 
         App.Current.MainPage.SetLoading(true);
         await TransactionsViewModel.InitializeItemsAsync();
-
-        if (DataContext is TransactionsViewModel viewModel)
-        {
-            viewModel.IsReady = true;
-        }
-
         App.Current.MainPage.SetLoading(false);
     }
 
