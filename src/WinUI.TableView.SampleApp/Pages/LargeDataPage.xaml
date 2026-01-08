@@ -22,7 +22,6 @@
             <controls:SamplePresenter.Example>
                 <tv:TableView x:Name="tableView"
                               IsReadOnly="True"
-                              AllowLiveShaping="False"
                               AutoGenerateColumns="False"
                               ItemsSource="{Binding TransacationsData}">
                     <tv:TableView.Columns>
