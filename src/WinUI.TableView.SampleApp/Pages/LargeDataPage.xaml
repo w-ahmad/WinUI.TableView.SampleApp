@@ -82,7 +82,6 @@
                 <x:String xml:space="preserve">
 &lt;tv:TableView x:Name="tableView"
     IsReadOnly="True"
-    AllowLiveShaping="False"
     ItemsSource="{Binding TransacationsData}">
                 </x:String>
             </controls:SamplePresenter.Xaml>
