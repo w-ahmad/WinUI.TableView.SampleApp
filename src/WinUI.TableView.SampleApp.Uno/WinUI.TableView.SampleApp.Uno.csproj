@@ -35,7 +35,17 @@
 
   <PropertyGroup Condition="$(IsBrowserWasm) == 'true'">
     <WasmShellMonoRuntimeExecutionMode>InterpreterAndAOT</WasmShellMonoRuntimeExecutionMode>
+    <WasmShellEmccLinkOptimization>false</WasmShellEmccLinkOptimization>
     <WasmShellEnableEmccProfiling>true</WasmShellEnableEmccProfiling>
+
+    <!--
+		Uncomment this block to generate a profile
+		<WasmShellGenerateAOTProfile>true</WasmShellGenerateAOTProfile>
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+		<UnoXamlResourcesTrimming>false</UnoXamlResourcesTrimming>
+		<WasmShellEnableJiterpreter>false</WasmShellEnableJiterpreter>
+		<DefineConstants>$(DefineConstants);AOT_PROFILE_GEN</DefineConstants>
+		-->
   </PropertyGroup>
 
   <ItemGroup>   
