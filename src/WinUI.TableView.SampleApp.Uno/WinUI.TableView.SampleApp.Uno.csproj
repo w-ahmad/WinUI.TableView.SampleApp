@@ -74,7 +74,6 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.ColorPicker" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
     <PackageReference Include="ClosedXML" />
-    <PackageReference Include="Bogus" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">

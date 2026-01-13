@@ -1,5 +1,4 @@
-﻿using Bogus;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace WinUI.TableView.SampleApp;
@@ -10,16 +9,25 @@ public partial class SalesViewModel : ObservableObject
     {
         await Task.Run(() =>
         {
-            var faker = new Faker<SaleExampleModel>()
-                .RuleFor(s => s.Employee, f => f.Name.FullName())
-                .RuleFor(s => s.Region, f => f.Address.Locale)
-                .RuleFor(s => s.Target, f => f.Random.Int(50_000, 250_000))
-                .RuleFor(s => s.Sales, (f, s) => f.Random.Int((int)(s.Target * 0.5), (int)(s.Target * 1.2)))
-                .RuleFor(s => s.Growth, f => f.Random.Int(-20, 60))
-                .RuleFor(s => s.Status, (f, s) => s.Sales >= s.Target ? (s.Growth >= 0 ? "Ahead" : "On Track") : (s.Growth < 0 ? "Behind" : "On Track"));
-
             SalesList.Clear();
-            SalesList = faker.Generate(50);
+
+            for (var i = 0; i < 50; i++)
+            {
+                var target = DataFaker.Integer(50_000, 250_000);
+                var sales = DataFaker.Integer((int)(target * 0.5), (int)(target * 1.2));
+                var growth = DataFaker.Integer(-20, 60);
+                var status = sales >= target ? (growth >= 0 ? "Ahead" : "On Track") : (growth < 0 ? "Behind" : "On Track");
+
+                SalesList.Add(new SaleExampleModel
+                {
+                    Employee = DataFaker.FullName(),
+                    Region = DataFaker.State(),
+                    Target = target,
+                    Sales = sales,
+                    Growth = growth,
+                    Status = status
+                });
+            }
         });
     }
 

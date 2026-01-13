@@ -1,5 +1,4 @@
-﻿using Bogus;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace WinUI.TableView.SampleApp;
@@ -24,22 +23,28 @@ public partial class ExampleViewModel : ObservableObject
             var startId = 1;
             var startDate = new DateOnly(1970, 1, 1);
 
-            var faker = new Faker<ExampleModel>()
-                .RuleFor(e => e.Id, f => startId++)
-                .RuleFor(e => e.FirstName, f => f.Name.FirstName())
-                .RuleFor(e => e.LastName, f => f.Name.LastName())
-                .RuleFor(e => e.Email, (f, e) => f.Internet.Email(e.FirstName, e.LastName))
-                .RuleFor(e => e.Gender, f => f.Person.Gender.ToString())
-                .RuleFor(e => e.Dob, f => DateOnly.FromDateTime(f.Date.Past(50, new DateTime(startDate.Year, startDate.Month, startDate.Day))))
-                .RuleFor(e => e.IsActive, f => f.Random.Bool())
-                .RuleFor(e => e.ActiveAt, f => TimeOnly.FromDateTime(f.Date.SoonOffset(1).DateTime))
-                .RuleFor(e => e.Department, f => f.Commerce.Department())
-                .RuleFor(e => e.Designation, f => f.Name.JobTitle())
-                .RuleFor(e => e.Address, f => f.Address.FullAddress())
-                .RuleFor(e => e.Avatar, f => f.Internet.Avatar());
-
             ItemsList.Clear();
-            ItemsList.AddRange(faker.Generate(1_000));
+
+            for (var i = 0; i < 1_000; i++)
+            {
+                var firstName = DataFaker.FirstName();
+                var lastName = DataFaker.LastName();
+                ItemsList.Add(new ExampleModel
+                {
+                    Id = startId++,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = DataFaker.Email(firstName, lastName),
+                    Gender = DataFaker.Gender(),
+                    Dob = DataFaker.PastDate(50, startDate),
+                    IsActive = DataFaker.Boolean(),
+                    ActiveAt = DataFaker.TimeOfDay(),
+                    Department = DataFaker.Department(),
+                    Designation = DataFaker.JobTitle(),
+                    Address = DataFaker.Address(),
+                    Avatar = DataFaker.Avatar()
+                });
+            }
         });
     }
 
