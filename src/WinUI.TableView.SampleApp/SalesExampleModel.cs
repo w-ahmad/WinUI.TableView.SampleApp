@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace WinUI.TableView.SampleApp;
 
-public partial class SaleExampleModel : ObservableObject
+public partial class SalesExampleModel : ObservableObject
 {
     [ObservableProperty]
     public partial string? Employee { get; set; }

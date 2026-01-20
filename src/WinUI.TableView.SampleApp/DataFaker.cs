@@ -81,6 +81,10 @@ public static class DataFaker
         "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
     ];
 
+    private static readonly string[] Regions = [
+        "East", "West", "North", "South"
+    ];
+
     // Genders
     private static readonly string[] Genders = ["Male", "Female", "Non-binary", "Genderfluid", "Agender", "Bigender", "Genderqueer", "Two-Spirit", "Prefer not to say"];
 
@@ -188,6 +192,11 @@ public static class DataFaker
     public static string State()
     {
         return States[_random.Next(States.Length)];
+    }
+
+    public static string Region()
+    {
+        return Regions[_random.Next(Regions.Length)];
     }
 
     public static string City()

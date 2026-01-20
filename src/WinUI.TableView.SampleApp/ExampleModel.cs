@@ -47,4 +47,6 @@ public partial class ExampleModel : ObservableObject
     [ObservableProperty]
     [Display(AutoGenerateField = false)]
     public partial string? Avatar { get; set; }
+
+    public Uri AvatarUrl => new Uri(Avatar ?? string.Empty);
 }
