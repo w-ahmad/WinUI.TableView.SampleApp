@@ -14,13 +14,19 @@
                                   Description="Showcasing built in column filter feature.">
             <controls:SamplePresenter.Example>
                 <tv:TableView ItemsSource="{Binding Items}"
-                              CanFilterColumns="{Binding IsOn, ElementName=canFilter, Mode=TwoWay}" />
+                              CanFilterColumns="{Binding IsOn, ElementName=canFilter, Mode=TwoWay}"
+                              ShowFilterItemsCount="{Binding IsOn, ElementName=filterItemsCount, Mode=TwoWay}" />
             </controls:SamplePresenter.Example>
             <controls:SamplePresenter.Options>
-                <StackPanel VerticalAlignment="Top">
+                <StackPanel Spacing="16">
                     <ToggleSwitch x:Name="canFilter"
                                   IsOn="True"
                                   Header="Can Filter Columns"
+                                  OnContent="True"
+                                  OffContent="False" />
+                    <ToggleSwitch x:Name="filterItemsCount"
+                                  IsOn="True"
+                                  Header="Show Filter Items Count"
                                   OnContent="True"
                                   OffContent="False" />
                 </StackPanel>
@@ -28,12 +34,15 @@
             <controls:SamplePresenter.Xaml>
                 <x:String xml:space="preserve">
 &lt;tv:TableView ItemsSource="{Binding Items}"
-    CanFilterColumns="$(CanFilterColumns)">
+    CanFilterColumns="$(CanFilterColumns)"
+    ShowFilterItemsCount="$(ShowFilterItemsCount)" />
                 </x:String>
             </controls:SamplePresenter.Xaml>
             <controls:SamplePresenter.Substitutions>
                 <controls:CodeSubstitution Key="CanFilterColumns"
                                            Value="{x:Bind canFilter.IsOn, Mode=OneWay}" />
+                 <controls:CodeSubstitution Key="ShowFilterItemsCount"
+                            Value="{x:Bind filterItemsCount.IsOn, Mode=OneWay}" />
             </controls:SamplePresenter.Substitutions>
         </controls:SamplePresenter>
     </Grid>
