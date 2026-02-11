@@ -197,7 +197,7 @@
                         <ProgressRing IsActive="True"
                                       Width="50"
                                       Height="50" />
-                        <TextBlock Text="Reading data from file..."
+                        <TextBlock Text="Preparing demo data..."
                                    Style="{StaticResource SubtitleTextBlockStyle}" />
                     </StackPanel>
                 </Grid>
