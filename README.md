@@ -1,3 +1,12 @@
+## ⚠️ Repository Archived
+
+This repository is no longer maintained.
+
+The Samples app for [WinUI.TableView](https://github.com/w-ahmad/WinUI.TableView) has been moved to the main repository to make things easier to find and keep everything in sync.
+
+👉 Please visit the main repository for the latest samples and updates:  **[WinUI.TableView Repository](https://github.com/w-ahmad/WinUI.TableView/tree/main/samples)**
+
+---
 # WinUI.TableView Sample App
 
 The **WinUI.TableView Sample App** showcases the capabilities of the [WinUI.TableView](https://github.com/w-ahmad/WinUI.TableView) control in a real-world application.
